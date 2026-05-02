@@ -275,8 +275,8 @@
     .link-back {
       background: none; border: none; color: var(--sub);
       font-size: 13px; font-family: 'Noto Sans KR', sans-serif;
-      cursor: pointer; text-decoration: underline; padding: 8px 0;
-      width: 100%; text-align: center;
+      cursor: pointer; text-decoration: underline; padding: 8px 16px;
+      display: inline-block; width: auto;
     }
     .link-back:hover { color: var(--text); }
 
@@ -501,11 +501,23 @@
   <script>
     let itemCount = 0;
 
-    function goTo(pageId) {
+    function goTo(pageId, pushHistory = true) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.getElementById(pageId).classList.add('active');
       window.scrollTo(0, 0);
+      if (pushHistory) {
+        history.pushState({ pageId }, '', '');
+      }
     }
+
+    // 브라우저/폰 뒤로가기 처리
+    window.addEventListener('popstate', function(e) {
+      const pageId = e.state?.pageId || 'page-home';
+      goTo(pageId, false);
+    });
+
+    // 초기 상태 등록
+    history.replaceState({ pageId: 'page-home' }, '', '');
 
     function addItem() {
       itemCount++;
