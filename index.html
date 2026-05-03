@@ -273,6 +273,10 @@
       border-color: var(--red) !important;
       background: #fff5f5 !important;
     }
+    .field input[readonly].invalid {
+      border-color: #f97316 !important;
+      background: #fff7ed !important;
+    }
     .link-back {
       background: none; border: none; color: var(--sub);
       font-size: 13px; font-family: 'Noto Sans KR', sans-serif;
@@ -515,9 +519,9 @@
                 res.properties?.nickname ||
                 '사용자';
               const banner = document.querySelector('.kakao-banner');
-              banner.style.background = '#d1fae5';
-              banner.style.border = '1.5px solid #6ee7b7';
-              document.getElementById('kakao-banner-text').style.color = '#065f46';
+              banner.style.background = '#f0fdf4';
+              banner.style.border = '1.5px solid #bbf7d0';
+              document.getElementById('kakao-banner-text').style.color = '#166534';
               document.getElementById('kakao-banner-text').textContent = '✓ 카카오 계정으로 로그인됨  |  닉네임: ' + nickname;
               document.getElementById('kakao-banner-btn').style.display = 'none';
 
