@@ -789,6 +789,9 @@
                 <button onclick="startEdit(${orderIdx},${itemIdx},'${order.date}')"
                   style="background:none; border:1.5px solid #d1d5db; border-radius:8px; padding:4px 10px;
                   font-size:12px; font-weight:600; color:var(--sub); cursor:pointer; font-family:'Noto Sans KR',sans-serif;">수정</button>
+                <button onclick="deleteItem(${orderIdx},${itemIdx},'${order.date}','${item.name}')"
+                  style="background:none; border:1.5px solid #fca5a5; border-radius:8px; padding:4px 10px;
+                  font-size:12px; font-weight:600; color:#e53935; cursor:pointer; font-family:'Noto Sans KR',sans-serif;">삭제</button>
               </div>
             </div>
             <div id="edit-row-${orderIdx}-${itemIdx}" style="display:none; background:#f8faff; border-radius:12px; padding:14px; margin:6px 0; border:1.5px solid #a5b4fc;">
@@ -849,6 +852,25 @@
           <div class="result-empty">조회 중 오류가 발생했습니다. 다시 시도해주세요.</div>`;
       }
     }
+    async function deleteItem(orderIdx, itemIdx, date, name) {
+      if (!confirm(`"${name}" 항목을 삭제할까요?`)) return;
+      const phone = document.getElementById('phone-input').value.replace(/-/g,'');
+      try {
+        await fetch(GAS_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'delete', phone, date, oldName: name })
+        });
+        // 화면에서 해당 항목 제거
+        document.getElementById(`item-row-${orderIdx}-${itemIdx}`).remove();
+        document.getElementById(`edit-row-${orderIdx}-${itemIdx}`)?.remove();
+        alert('삭제되었습니다.');
+      } catch(e) {
+        alert('삭제 중 오류가 발생했습니다.');
+      }
+    }
+
     function startEdit(orderIdx, itemIdx, date) {
       document.getElementById(`item-row-${orderIdx}-${itemIdx}`).style.display = 'none';
       document.getElementById(`edit-row-${orderIdx}-${itemIdx}`).style.display = 'block';
