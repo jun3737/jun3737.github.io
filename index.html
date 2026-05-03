@@ -780,13 +780,13 @@
           return;
         }
 
-        // rows: [전화번호, 날짜, 상품명, 사이즈, 색상, 수량, 가격, 배송비, 총금액]
+        // rows: [전화번호(0), 날짜(1), 유튜브닉네임(2), 입금자명(3), 주소(4), 배송요청(5), 상품명(6), 사이즈(7), 색상(8), 수량(9), 가격(10), 배송비(11), 총금액(12)]
         // 날짜별로 그룹핑
         const groups = {};
         filtered.forEach(r => {
-          const key = r[1]; // 날짜
-          if (!groups[key]) groups[key] = { date: r[1], shipping: r[7], total: r[8], items: [] };
-          groups[key].items.push({ name: r[2], size: r[3], color: r[4], qty: r[5], price: r[6] });
+          const key = r[1];
+          if (!groups[key]) groups[key] = { date: r[1], shipping: r[11], total: r[12], items: [] };
+          groups[key].items.push({ name: r[6], size: r[7], color: r[8], qty: r[9], price: r[10] });
         });
 
         let html = `
