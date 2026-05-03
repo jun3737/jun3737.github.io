@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>땡큐몰</title>
+  <title>땡큐몰 주문하기</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet"/>
   <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
   <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
@@ -229,6 +229,7 @@
       margin: 0 auto;
       gap: 12px;
     }
+    .correct-title {
       font-size: 26px; font-weight: 900; color: var(--text);
       margin-bottom: 8px; text-align: center; letter-spacing: -0.5px;
     }
@@ -371,7 +372,7 @@
 
   <!-- PAGE 1: 서비스 선택 -->
   <div id="page-home" class="page active">
-    <h1 class="home-title">땡큐몰</h1>
+    <h1 class="home-title">땡큐몰 주문하기</h1>
     <p class="home-sub">원하시는 서비스를 선택해주세요.</p>
     <div class="cards">
       <button class="card card-primary" onclick="goTo('page-order')">
@@ -517,17 +518,6 @@
               document.getElementById('kakao-banner-text').style.color = '#166534';
               document.getElementById('kakao-banner-text').textContent = '✓ 카카오 계정으로 로그인됨  |  닉네임: ' + nickname;
               document.getElementById('kakao-banner-btn').style.display = 'none';
-
-              // 3초 뒤 위로 부드럽게 사라지기
-              setTimeout(function() {
-                banner.style.transition = 'opacity 0.5s ease, max-height 0.5s ease, margin 0.5s ease, padding 0.5s ease';
-                banner.style.opacity = '0';
-                banner.style.maxHeight = '0';
-                banner.style.padding = '0';
-                banner.style.margin = '0';
-                banner.style.overflow = 'hidden';
-                setTimeout(function() { banner.style.display = 'none'; }, 500);
-              }, 3000);
             },
             fail: function(err) {
               console.error('사용자 정보 조회 실패:', err);
