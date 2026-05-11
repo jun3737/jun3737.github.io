@@ -543,7 +543,7 @@
       </ol>
       <div class="refund-notice-box">
         <p>** 방송시간 중에는 교환/반품 상담이 어렵습니다. 접수순으로 연락드립니다. 조금만 기다려주시면 감사하겠습니다!</p>
-        <p style="margin-top:6px;">** 교환과 반품시에는 택과 폴리백은 반으신 그대로 보내주셔야 검수가 가능합니다.</p>
+        <p style="margin-top:6px;">** 교환과 반품시에는 택과 폴리백은 받으신 그대로 보내주셔야 검수가 가능합니다.</p>
       </div>
     </div>
 
@@ -630,7 +630,7 @@
               </div>
               <div style="display:flex; align-items:center; gap:8px;">
                 <div style="font-weight:700; font-size:13px;">${(item.price * item.qty).toLocaleString()}원</div>
-                <button onclick="requestRefund('${item.name}','${item.size}','${item.color}',${item.qty},${item.price},'${order.date}','${phoneClean}')"
+                <button onclick="requestRefund('${item.name}','${item.size}','${item.color}',${item.qty},${item.price},'${order.date}','${phoneClean}',this)"
                   style="background:#fff1f2; border:1.5px solid #fca5a5; border-radius:8px; padding:4px 10px;
                   font-size:12px; font-weight:600; color:#e53935; cursor:pointer; font-family:'Noto Sans KR',sans-serif;">환불신청</button>
               </div>
@@ -660,8 +660,14 @@
       }
     }
 
-    async function requestRefund(name, size, color, qty, price, date, phone) {
+    async function requestRefund(name, size, color, qty, price, date, phone, btn) {
       if (!confirm(`"${name}" 항목의 환불을 신청할까요?`)) return;
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = '신청완료';
+        btn.style.opacity = '0.45';
+        btn.style.cursor = 'default';
+      }
       try {
         await fetch(GAS_URL, {
           method: 'POST',
@@ -676,6 +682,12 @@
         alert(`환불 신청이 완료되었습니다!\n\n상품: ${name}\n사이즈: ${size} / 색상: ${color}\n수량: ${qty}개\n\n담당자가 확인 후 연락드립니다.`);
       } catch(e) {
         alert('환불 신청 중 오류가 발생했습니다. 다시 시도해주세요.');
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = '환불신청';
+          btn.style.opacity = '1';
+          btn.style.cursor = 'pointer';
+        }
       }
     }
 
