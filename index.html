@@ -10,8 +10,7 @@
 
     body {
       font-family: 'Noto Sans KR', sans-serif;
-      /* 차가운 회색을 빼고 포근한 온기를 한 스푼 넣은 따뜻한 배경색 */
-      background-color: #e9ebee; 
+      background-color: #EDEAE4; /* 요청하신 따뜻하고 아늑한 배경색 고정 */
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -19,47 +18,46 @@
       padding: 20px;
     }
 
-    /* 중앙 안내 카드 (원본의 깨끗하고 선명한 화이트 유지) */
+    /* 중앙 안내 카드 (image_3d5c80.png 특유의 가로/세로 황금 비율 반영) */
     .close-card {
       background-color: #ffffff; 
       width: 100%;
-      max-width: 375px;
+      max-width: 390px; /* 카드가 너무 길어 보이지 않도록 가로 폭을 넓히고 안정감 있게 조정 */
       border-radius: 24px;
-      padding: 54px 24px 40px 24px;
-      /* 따뜻해진 배경에 맞춰 부드럽게 퍼지는 은은한 그림자 */
-      box-shadow: 0 12px 36px rgba(165, 173, 186, 0.2);
+      padding: 50px 36px 40px 36px; /* 좌우 여백을 넓혀 버튼이 양옆으로 꽉 차게 배치 */
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04); /* 과하지 않은 은은한 그림자 */
       text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
 
-    /* 땡큐몰 상단 타이틀 (원본의 선명한 블루) */
+    /* 땡큐몰 상단 타이틀 (두 번째 사진의 선명한 블루) */
     .brand-name {
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 800;
-      color: #0f4c81; 
+      color: #004ba0; 
       margin-bottom: 24px;
       letter-spacing: -0.3px;
     }
 
-    /* 주요 메시지 (원본의 또렷하고 선명한 메인 블루) */
+    /* 주요 메시지 (두 번째 사진 특유의 볼드함과 줄바꿈 비율) */
     .main-message {
-      font-size: 23px;
+      font-size: 24px;
       font-weight: 900;
-      color: #0f4c81; 
-      line-height: 1.45;
+      color: #004ba0; 
+      line-height: 1.4;
       margin-bottom: 24px;
       letter-spacing: -0.5px;
     }
 
-    /* 하단 보조 설명 문구 */
+    /* 하단 보조 설명 문구 (과하지 않고 정갈한 폰트 크기) */
     .sub-message {
       font-size: 13px;
       font-weight: 500;
       color: #94a3b8; 
-      line-height: 1.6;
-      margin-bottom: 36px;
+      line-height: 1.5;
+      margin-bottom: 32px;
       letter-spacing: -0.2px;
     }
 
@@ -73,15 +71,14 @@
 
     /* 환불 신청 버튼 */
     .btn-refund {
-      width: 100%;
-      background-color: #fff1f2; /* 원본 특유의 은은하고 화사한 연핑크 베이스 */
+      width: 100%; /* 양옆 여백에 맞춰 시원하게 꽉 차는 버튼 라인 */
+      background-color: #fff1f2; /* 화사하고 부드러운 연핑크 배경 */
       border: 1px solid #ffe4e6; 
       border-radius: 14px;
       padding: 15px;
       font-size: 14px;
       font-weight: 800;
-      /* 너무 쨍해서 눈 아픈 빨강 대신, 부드러우면서도 존재감 있는 크림슨 레드 */
-      color: #c92a2a; 
+      color: #df223a; /* 눈이 아프지 않으면서 원본 느낌을 선명하게 살린 레드 */
       font-family: 'Noto Sans KR', sans-serif;
       cursor: pointer;
       transition: background-color 0.15s, transform 0.1s;
