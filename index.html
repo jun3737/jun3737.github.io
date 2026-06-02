@@ -10,7 +10,7 @@
 
     body {
       font-family: 'Noto Sans KR', sans-serif;
-      background-color: #cbd2db; /* 배경 밝기를 한 단계 낮춰 눈을 편안하게 조절 */
+      background-color: #e5e0d8; /* 차분하고 따뜻한 느낌의 밀크티 베이지 배경 */
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -18,25 +18,25 @@
       padding: 20px;
     }
 
-    /* 중앙 안내 카드 (눈부심 방지를 위해 미색/연회색 톤으로 다운) */
+    /* 중앙 안내 카드 (눈부심을 덜어주는 소프트 크림 아이보리) */
     .close-card {
-      background-color: #f4f5f7; 
+      background-color: #fcfbfa; 
       width: 100%;
       max-width: 360px;
       border-radius: 24px;
       padding: 48px 24px 36px 24px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+      box-shadow: 0 10px 30px rgba(139, 130, 115, 0.12); /* 따뜻한 톤의 부드러운 그림자 */
       text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
 
-    /* 땡큐몰 상단 타이틀 */
+    /* 땡큐몰 상단 타이틀 (포근한 딥 브라운) */
     .brand-name {
       font-size: 16px;
       font-weight: 800;
-      color: #1e3a8a;
+      color: #4a3b32;
       margin-bottom: 24px;
       letter-spacing: -0.3px;
     }
@@ -45,17 +45,17 @@
     .main-message {
       font-size: 22px;
       font-weight: 900;
-      color: #1e3a8a;
+      color: #2b2420; /* 쨍한 블랙 대신 눈이 편안한 다크 브라운 */
       line-height: 1.4;
       margin-bottom: 24px;
       letter-spacing: -0.5px;
     }
 
-    /* 하단 보조 설명 문구 (대비가 너무 강하지 않게 차분한 회색 처리) */
+    /* 하단 보조 설명 문구 */
     .sub-message {
       font-size: 13px;
       font-weight: 500;
-      color: #64748b; 
+      color: #8c827a; /* 본문과 어우러지는 웜 그레이 */
       line-height: 1.6;
       margin-bottom: 32px;
       letter-spacing: -0.2px;
@@ -65,27 +65,27 @@
     .divider {
       width: 100%;
       height: 1px;
-      background-color: #e2e8f0;
+      background-color: #f0ede9;
       margin-bottom: 24px;
     }
 
-    /* 환불 신청 버튼 (마찬가지로 톤을 살짝 다운시킨 차분한 핑크레드) */
+    /* 환불 신청 버튼 (차분하고 이쁜 인디핑크 & 코랄 브라운 조화) */
     .btn-refund {
       width: 100%;
-      background-color: #ffe4e6; 
-      border: 1px solid #fecdd3; 
+      background-color: #f7edea; /* 아늑한 톤의 연한 인디핑크 베이스 */
+      border: 1px solid #ebdcd7; 
       border-radius: 14px;
       padding: 14px;
       font-size: 14px;
       font-weight: 800;
-      color: #be123c; 
+      color: #bc6c58; /* 튀지 않으면서 조화로운 로즈 브라운 */
       font-family: 'Noto Sans KR', sans-serif;
       cursor: pointer;
       transition: background-color 0.15s, transform 0.1s;
     }
 
     .btn-refund:active {
-      background-color: #fecdd3;
+      background-color: #ebdcd7;
       transform: scale(0.99);
     }
   </style>
