@@ -10,7 +10,8 @@
 
     body {
       font-family: 'Noto Sans KR', sans-serif;
-      background-color: #e2e5ec; /* 원본의 연그레이 배경에서 채도와 밝기를 차분하게 조절 */
+      /* 차가운 회색을 빼고 포근한 온기를 한 스푼 넣은 따뜻한 배경색 */
+      background-color: #e9ebee; 
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -18,35 +19,36 @@
       padding: 20px;
     }
 
-    /* 중앙 안내 카드 (쨍한 백색을 피해 눈부심을 방지한 부드러운 미색) */
+    /* 중앙 안내 카드 (원본의 깨끗하고 선명한 화이트 유지) */
     .close-card {
-      background-color: #f8f9fa; 
+      background-color: #ffffff; 
       width: 100%;
-      max-width: 360px;
+      max-width: 375px;
       border-radius: 24px;
-      padding: 48px 24px 36px 24px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+      padding: 54px 24px 40px 24px;
+      /* 따뜻해진 배경에 맞춰 부드럽게 퍼지는 은은한 그림자 */
+      box-shadow: 0 12px 36px rgba(165, 173, 186, 0.2);
       text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
 
-    /* 땡큐몰 상단 타이틀 (원본 블루에서 채도를 낮춘 차분한 데님 네이비) */
+    /* 땡큐몰 상단 타이틀 (원본의 선명한 블루) */
     .brand-name {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 800;
-      color: #3b4b6b;
+      color: #0f4c81; 
       margin-bottom: 24px;
       letter-spacing: -0.3px;
     }
 
-    /* 주요 메시지 */
+    /* 주요 메시지 (원본의 또렷하고 선명한 메인 블루) */
     .main-message {
-      font-size: 22px;
+      font-size: 23px;
       font-weight: 900;
-      color: #2e3b54; /* 채도를 낮춰 대비를 부드럽게 만든 메인 블루 */
-      line-height: 1.4;
+      color: #0f4c81; 
+      line-height: 1.45;
       margin-bottom: 24px;
       letter-spacing: -0.5px;
     }
@@ -55,9 +57,9 @@
     .sub-message {
       font-size: 13px;
       font-weight: 500;
-      color: #8a94a6; /* 자극적이지 않은 차분한 그레이 */
+      color: #94a3b8; 
       line-height: 1.6;
-      margin-bottom: 32px;
+      margin-bottom: 36px;
       letter-spacing: -0.2px;
     }
 
@@ -65,27 +67,28 @@
     .divider {
       width: 100%;
       height: 1px;
-      background-color: #edf0f5;
-      margin-bottom: 24px;
+      background-color: #f1f5f9;
+      margin-bottom: 28px;
     }
 
-    /* 환불 신청 버튼 (원본의 핑크/레드 톤에서 채도를 쏙 뺀 편안한 컬러) */
+    /* 환불 신청 버튼 */
     .btn-refund {
       width: 100%;
-      background-color: #f9ebeb; /* 채도가 낮고 부드러운 연핑크 */
-      border: 1px solid #ebd7d7; 
+      background-color: #fff1f2; /* 원본 특유의 은은하고 화사한 연핑크 베이스 */
+      border: 1px solid #ffe4e6; 
       border-radius: 14px;
-      padding: 14px;
+      padding: 15px;
       font-size: 14px;
       font-weight: 800;
-      color: #ba5353; /* 쨍한 레드가 아닌 차분하게 가라앉은 톤다운 로즈레드 */
+      /* 너무 쨍해서 눈 아픈 빨강 대신, 부드러우면서도 존재감 있는 크림슨 레드 */
+      color: #c92a2a; 
       font-family: 'Noto Sans KR', sans-serif;
       cursor: pointer;
       transition: background-color 0.15s, transform 0.1s;
     }
 
     .btn-refund:active {
-      background-color: #ebd7d7;
+      background-color: #ffe4e6;
       transform: scale(0.99);
     }
   </style>
