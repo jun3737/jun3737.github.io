@@ -504,9 +504,9 @@
       <button class="card-account" onclick="copyAccount()">
         <div class="card-account-left">
           <span class="card-account-label">입금 계좌</span>
-          <span class="card-account-bank">NH 농협은행</span>
-          <span class="card-account-number">302-1514-6487-51</span>
-          <span class="card-account-name">오은정</span>
+          <span class="card-account-bank">카카오뱅크</span>
+          <span class="card-account-number">3333-01-1234567</span>
+          <span class="card-account-name">홍길동</span>
         </div>
         <div class="card-account-right">
           <span class="copy-icon">📋</span>
@@ -1251,8 +1251,22 @@
     function copyAccount() {
       const accountNumber = "3333-01-1234567";
       const toast = document.getElementById("copy-toast");
+      const icon = document.querySelector(".copy-icon");
+      const hint = document.querySelector(".copy-hint");
+
+      function onCopied() {
+        icon.textContent = "✅";
+        hint.textContent = "복사됨!";
+        toast.classList.add("show");
+        setTimeout(() => {
+          toast.classList.remove("show");
+          icon.textContent = "📋";
+          hint.textContent = "탭하여 복사";
+        }, 2200);
+      }
+
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(accountNumber).then(() => showToast(toast));
+        navigator.clipboard.writeText(accountNumber).then(onCopied);
       } else {
         const el = document.createElement("textarea");
         el.value = accountNumber;
@@ -1262,13 +1276,8 @@
         el.select();
         document.execCommand("copy");
         document.body.removeChild(el);
-        showToast(toast);
+        onCopied();
       }
-    }
-
-    function showToast(toast) {
-      toast.classList.add("show");
-      setTimeout(() => toast.classList.remove("show"), 2200);
     }
 
     addItem(); // 초기 1개
