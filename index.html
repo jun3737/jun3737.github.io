@@ -10,11 +10,11 @@
 
     :root {
       --bg-color: #EDEAE4;          /* 따뜻하고 아늑한 배경색 */
-      --main-text: #1A3A5C;         /* 요청하신 주 텍스트 색 */
-      --sub-text: #6B7280;          /* 요청하신 보조 텍스트 색 */
-      --refund-text: #C84142;       /* 요청하신 환불신청 텍스트 색 */
-      --refund-bg: #FFF1F2;         /* 요청하신 환불신청 배경 색 */
-      --refund-border: #FECDD3;     /* 요청하신 환불신청 테두리 색 */
+      --main-text: #1A3A5C;         /* 주 텍스트 색 */
+      --sub-text: #6B7280;          /* 보조 텍스트 색 */
+      --refund-text: #C84142;       /* 환불신청 텍스트 색 */
+      --refund-bg: #FFF1F2;         /* 환불신청 배경 색 */
+      --refund-border: #FECDD3;     /* 환불신청 테두리 색 */
     }
 
     body {
@@ -27,11 +27,11 @@
       padding: 20px;
     }
 
-    /* 중앙 안내 카드 (두 번째 사진의 안정적인 핏과 패딩 조절) */
+    /* 중앙 안내 카드 */
     .close-card {
       background-color: #ffffff; 
       width: 100%;
-      max-width: 400px; /* 글자 크기가 커짐에 따라 가로 폭을 살짝 더 넓혀 밸런스 유지 */
+      max-width: 400px;
       border-radius: 24px;
       padding: 56px 36px 44px 36px;
       box-shadow: 0 10px 32px rgba(0, 0, 0, 0.04);
@@ -41,7 +41,7 @@
       align-items: center;
     }
 
-    /* 땡큐몰 상단 타이틀 (크기 업그레이드) */
+    /* 땡큐몰 상단 타이틀 */
     .brand-name {
       font-size: 18px;
       font-weight: 800;
@@ -50,7 +50,7 @@
       letter-spacing: -0.3px;
     }
 
-    /* 주요 메시지 (시원하고 볼드하게 크기 업그레이드) */
+    /* 주요 메시지 */
     .main-message {
       font-size: 26px;
       font-weight: 900;
@@ -60,7 +60,7 @@
       letter-spacing: -0.5px;
     }
 
-    /* 하단 보조 설명 문구 (가독성을 위해 14px로 업그레이드) */
+    /* 하단 보조 설명 문구 */
     .sub-message {
       font-size: 14.5px;
       font-weight: 500;
@@ -70,33 +70,45 @@
       letter-spacing: -0.3px;
     }
 
-    /* 중간 구분선 */
+    /* 중간 구분선 (더 명확하고 깔끔하게 톤 조절) */
     .divider {
       width: 100%;
       height: 1px;
-      background-color: #f1f5f9;
+      background-color: #E5E7EB; /* 구분이 뚜렷해지도록 세련된 그레이 톤업 */
       margin-bottom: 32px;
     }
 
-    /* 환불 신청 버튼 (지정 색상 100% 반영 및 텍스트 스케일 업) */
+    /* 환불 신청 버튼 (플로팅 애니메이션 추가) */
     .btn-refund {
       width: 100%;
       background-color: var(--refund-bg);
       border: 1px solid var(--refund-border);
       border-radius: 14px;
-      padding: 16px; /* 버튼의 터치 영역과 안정감을 위해 패딩 소폭 확대 */
+      padding: 16px;
       font-size: 15.5px;
       font-weight: 800;
       color: var(--refund-text);
       font-family: 'Noto Sans KR', sans-serif;
       cursor: pointer;
       letter-spacing: -0.2px;
-      transition: background-color 0.15s, transform 0.1s;
+      
+      /* 움직임이 부드럽도록 transition 설정 */
+      transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), 
+                  box-shadow 0.25s cubic-bezier(0.25, 1, 0.5, 1), 
+                  background-color 0.15s;
     }
 
+    /* 마우스 커서를 올렸을 때 (Hover 플로팅 효과) */
+    .btn-refund:hover {
+      transform: translateY(-4px); /* 위로 4px 살짝 띄우기 */
+      box-shadow: 0 6px 16px rgba(200, 65, 66, 0.15); /* 버튼 색상에 맞춘 은은한 핑크빛 섀도우 */
+    }
+
+    /* 버튼을 클릭했을 때 (Active 꾹 누르는 효과) */
     .btn-refund:active {
+      transform: translateY(-1px); /* 살짝 가라앉기 */
       background-color: var(--refund-border);
-      transform: scale(0.99);
+      box-shadow: 0 2px 6px rgba(200, 65, 66, 0.1);
     }
   </style>
 </head>
@@ -117,7 +129,7 @@
       다음 판매 일정에 다시 찾아주세요.
     </div>
 
-    <!-- 얇은 구분선 -->
+    <!-- 명확해진 구분선 -->
     <div class="divider"></div>
 
     <!-- 환불 신청 버튼 -->
