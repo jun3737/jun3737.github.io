@@ -8,9 +8,18 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    :root {
+      --bg-color: #EDEAE4;          /* 따뜻하고 아늑한 배경색 */
+      --main-text: #1A3A5C;         /* 요청하신 주 텍스트 색 */
+      --sub-text: #6B7280;          /* 요청하신 보조 텍스트 색 */
+      --refund-text: #C84142;       /* 요청하신 환불신청 텍스트 색 */
+      --refund-bg: #FFF1F2;         /* 요청하신 환불신청 배경 색 */
+      --refund-border: #FECDD3;     /* 요청하신 환불신청 테두리 색 */
+    }
+
     body {
       font-family: 'Noto Sans KR', sans-serif;
-      background-color: #EDEAE4; /* 요청하신 따뜻하고 아늑한 배경색 고정 */
+      background-color: var(--bg-color);
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -18,47 +27,47 @@
       padding: 20px;
     }
 
-    /* 중앙 안내 카드 (image_3d5c80.png 특유의 가로/세로 황금 비율 반영) */
+    /* 중앙 안내 카드 (두 번째 사진의 안정적인 핏과 패딩 조절) */
     .close-card {
       background-color: #ffffff; 
       width: 100%;
-      max-width: 390px; /* 카드가 너무 길어 보이지 않도록 가로 폭을 넓히고 안정감 있게 조정 */
+      max-width: 400px; /* 글자 크기가 커짐에 따라 가로 폭을 살짝 더 넓혀 밸런스 유지 */
       border-radius: 24px;
-      padding: 50px 36px 40px 36px; /* 좌우 여백을 넓혀 버튼이 양옆으로 꽉 차게 배치 */
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04); /* 과하지 않은 은은한 그림자 */
+      padding: 56px 36px 44px 36px;
+      box-shadow: 0 10px 32px rgba(0, 0, 0, 0.04);
       text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
 
-    /* 땡큐몰 상단 타이틀 (두 번째 사진의 선명한 블루) */
+    /* 땡큐몰 상단 타이틀 (크기 업그레이드) */
     .brand-name {
-      font-size: 16px;
+      font-size: 18px;
       font-weight: 800;
-      color: #004ba0; 
+      color: var(--main-text);
       margin-bottom: 24px;
       letter-spacing: -0.3px;
     }
 
-    /* 주요 메시지 (두 번째 사진 특유의 볼드함과 줄바꿈 비율) */
+    /* 주요 메시지 (시원하고 볼드하게 크기 업그레이드) */
     .main-message {
-      font-size: 24px;
+      font-size: 26px;
       font-weight: 900;
-      color: #004ba0; 
-      line-height: 1.4;
+      color: var(--main-text);
+      line-height: 1.45;
       margin-bottom: 24px;
       letter-spacing: -0.5px;
     }
 
-    /* 하단 보조 설명 문구 (과하지 않고 정갈한 폰트 크기) */
+    /* 하단 보조 설명 문구 (가독성을 위해 14px로 업그레이드) */
     .sub-message {
-      font-size: 13px;
+      font-size: 14.5px;
       font-weight: 500;
-      color: #94a3b8; 
-      line-height: 1.5;
-      margin-bottom: 32px;
-      letter-spacing: -0.2px;
+      color: var(--sub-text);
+      line-height: 1.6;
+      margin-bottom: 36px;
+      letter-spacing: -0.3px;
     }
 
     /* 중간 구분선 */
@@ -66,26 +75,27 @@
       width: 100%;
       height: 1px;
       background-color: #f1f5f9;
-      margin-bottom: 28px;
+      margin-bottom: 32px;
     }
 
-    /* 환불 신청 버튼 */
+    /* 환불 신청 버튼 (지정 색상 100% 반영 및 텍스트 스케일 업) */
     .btn-refund {
-      width: 100%; /* 양옆 여백에 맞춰 시원하게 꽉 차는 버튼 라인 */
-      background-color: #fff1f2; /* 화사하고 부드러운 연핑크 배경 */
-      border: 1px solid #ffe4e6; 
+      width: 100%;
+      background-color: var(--refund-bg);
+      border: 1px solid var(--refund-border);
       border-radius: 14px;
-      padding: 15px;
-      font-size: 14px;
+      padding: 16px; /* 버튼의 터치 영역과 안정감을 위해 패딩 소폭 확대 */
+      font-size: 15.5px;
       font-weight: 800;
-      color: #df223a; /* 눈이 아프지 않으면서 원본 느낌을 선명하게 살린 레드 */
+      color: var(--refund-text);
       font-family: 'Noto Sans KR', sans-serif;
       cursor: pointer;
+      letter-spacing: -0.2px;
       transition: background-color 0.15s, transform 0.1s;
     }
 
     .btn-refund:active {
-      background-color: #ffe4e6;
+      background-color: var(--refund-border);
       transform: scale(0.99);
     }
   </style>
