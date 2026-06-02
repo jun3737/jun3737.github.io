@@ -32,12 +32,12 @@
     .hidden { display: none !important; }
 
     /* ==========================================
-       [1] 주문접수 마감 카드 (가로 크기 축소 버전)
+       [1] 주문접수 마감 카드
        ========================================== */
     .close-card {
       background-color: #ffffff; 
       width: 100%;
-      max-width: 360px; /* 요청하신 대로 가로 크기를 기존 400px에서 360px로 소폭 축소 */
+      max-width: 360px;
       border-radius: 24px;
       padding: 56px 32px 44px 32px;
       box-shadow: 0 10px 32px rgba(0, 0, 0, 0.04);
@@ -106,11 +106,11 @@
     }
 
     /* ==========================================
-       [2] 환불/반품 접수 서브 페이지 (image_3cf706.png 구현)
+       [2] 환불/반품 접수 서브 페이지
        ========================================== */
     .refund-container {
       width: 100%;
-      max-width: 520px; /* 원본 사진의 넉넉하고 정갈한 폼 크기 반영 */
+      max-width: 520px;
       text-align: center;
       animation: fadeIn 0.4s ease-out;
     }
@@ -133,7 +133,6 @@
       margin-bottom: 32px;
     }
 
-    /* 흰색 라운드 카드 공통 스타일 */
     .content-box {
       background-color: #ffffff;
       border-radius: 20px;
@@ -143,7 +142,6 @@
       margin-bottom: 24px;
     }
 
-    /* 상단 경고/안내 붉은색 박스 */
     .alert-box {
       border: 1px solid var(--refund-border);
       background-color: var(--refund-bg);
@@ -156,7 +154,6 @@
       margin-bottom: 24px;
     }
 
-    /* 안내 섹션 타이틀 */
     .section-title {
       font-size: 15px;
       font-weight: 800;
@@ -170,7 +167,6 @@
       margin-left: 4px;
     }
 
-    /* 안내 리스트 문구 */
     .info-list {
       list-style: none;
       margin-bottom: 20px;
@@ -194,7 +190,6 @@
       color: var(--refund-text);
     }
 
-    /* 하단 연노랑 요약 안내 박스 */
     .notice-box {
       background-color: #FFFDF0;
       border-radius: 10px;
@@ -207,7 +202,7 @@
       line-height: 1.7;
     }
 
-    /* 하단 스텝 표시 배지 (1 주문조회) */
+    /* 하단 스텝 표시 배지 (동그라미에서 '네모'로 수정) */
     .step-badge {
       display: inline-flex;
       align-items: center;
@@ -223,7 +218,7 @@
       font-weight: 800;
       width: 20px;
       height: 20px;
-      border-radius: 50%;
+      border-radius: 4px; /* image_3cf706.png 피드백 반영: 완전한 원(50%)에서 살짝 둥근 사각형으로 수정 */
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -234,7 +229,6 @@
       color: var(--main-text);
     }
 
-    /* 입력 폼 스타일 */
     .form-group {
       display: flex;
       flex-direction: column;
@@ -273,7 +267,6 @@
       margin-top: 2px;
     }
 
-    /* 주문조회 버튼 (사진의 차분한 블루그레이 톤 반영) */
     .btn-submit {
       width: 100%;
       background-color: #BAC5D5;
@@ -291,7 +284,6 @@
       background-color: #A3B1C5;
     }
 
-    /* 처음으로 돌아가기 링크 */
     .btn-back {
       display: inline-block;
       margin-top: 12px;
@@ -315,17 +307,15 @@
       다음 판매 일정에 다시 찾아주세요.
     </div>
     <div class="divider"></div>
-    <!-- 클릭 시 showRefund() 함수 실행 -->
-    <button class="btn-refund" onclick="showRefund()">환불 신청</button>
+    <button class="btn-refund" onclick="goToRefund()">환불 신청</button>
   </div>
 
 
-  <!-- [2] 환불/반품 접수 페이지 (기본 상태 hidden) -->
+  <!-- [2] 환불/반품 접수 페이지 (기본 숨김) -->
   <div id="refundContainer" class="refund-container hidden">
     <h1 class="refund-title">환불/반품 접수</h1>
     <p class="refund-subtitle">주문 정보를 확인하고 환불 또는 반품을 접수할 수 있습니다.</p>
 
-    <!-- 상단 종합 안내 카드 -->
     <div class="content-box">
       <div class="alert-box">
         * 입금을 안 했는데 상품 주문을 취소하고 싶은 경우에는 주문 정정 탭에서 주문 조회를 한 뒤 삭제를 눌러주세요
@@ -348,7 +338,7 @@
       </div>
     </div>
 
-    <!-- 하단 1단계 주문 조회 카드 -->
+    <!-- 스텝 표시 배지 (네모 박스로 수정 완료) -->
     <div class="step-badge">
       <span class="step-number">1</span>
       <span class="step-title">주문 조회</span>
@@ -363,23 +353,49 @@
       <button class="btn-submit">주문 조회</button>
     </div>
 
-    <!-- 처음으로 돌아가기 버튼 -->
-    <span class="btn-back" onclick="showMain()">처음으로 돌아가기</span>
+    <!-- 처음으로 돌아가기 버튼 (클릭 시에도 브라우저 뒤로가기와 동일하게 작동) -->
+    <span class="btn-back" onclick="goBackToMain()">처음으로 돌아가기</span>
   </div>
 
   <script>
-    // 환불 신청 화면 띄우기
-    function showRefund() {
-      document.getElementById('closeCard').classList.add('hidden');
-      document.getElementById('refundContainer').classList.remove('hidden');
-      window.scrollTo(0, 0); // 화면 상단으로 스크롤 이동
+    // 1. 환불 폼으로 이동하면서 브라우저 히스토리에 '상태(state)' 추가
+    function goToRefund() {
+      // 현재 기록에 마감 메인상태 주입 후, 환불 상태용 세션 추가
+      history.pushState({ page: 'refund' }, '', '#refund');
+      renderPage('refund');
     }
 
-    // 초기 마감 안내 화면으로 돌아가기
-    function showMain() {
-      document.getElementById('refundContainer').classList.add('hidden');
-      document.getElementById('closeCard').classList.remove('hidden');
+    // 2. 처음으로 돌아가기 클릭 시 브라우저의 실제 뒤로가기 실행
+    function goBackToMain() {
+      history.back(); 
     }
+
+    // 3. 상태에 따라 화면 레이아웃 스위칭하는 렌더링 함수
+    function renderPage(pageState) {
+      const closeCard = document.getElementById('closeCard');
+      const refundContainer = document.getElementById('refundContainer');
+
+      if (pageState === 'refund') {
+        closeCard.classList.add('hidden');
+        refundContainer.classList.remove('hidden');
+        window.scrollTo(0, 0);
+      } else {
+        refundContainer.classList.add('hidden');
+        closeCard.classList.remove('hidden');
+      }
+    }
+
+    // 4. 사용자가 브라우저 뒤로가기/앞으로가기 버튼을 눌렀을 때 감지 (핵심 로직)
+    window.addEventListener('popstate', function(event) {
+      if (event.state && event.state.page === 'refund') {
+        renderPage('refund');
+      } else {
+        renderPage('main');
+      }
+    });
+
+    // 초기 진입 시 히스토리 기점 초기화
+    history.replaceState({ page: 'main' }, '', '');
   </script>
 
 </body>
