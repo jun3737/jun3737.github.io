@@ -639,15 +639,15 @@
       <!-- 안내 카드 시작 -->
       <div class="refund-notice">
         
-        <!-- [맨 위로 이동] 빨간색 중요 안내 -->
-        <div style="background-color: #fff1f2; border: 1px solid #fecdd3; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: 14px; line-height: 1.6; color: #dc2626; font-weight: 700;">
+        <!-- 맨 위 빨간색 중요 안내 (박스 형태 유지 혹은 텍스트로 깔끔하게) -->
+        <div style="margin-bottom: 20px; font-size: 14px; line-height: 1.6; color: #dc2626; font-weight: 700;">
           * 입금을 안 했는데 상품 주문을 취소하고 싶은 경우에는 주문 정정 탭에서 주문 조회를 한 뒤 삭제를 눌러주세요
         </div>
         
         <!-- 1. 환불 안내 -->
         <div style="margin-bottom: 24px;">
           <div class="refund-notice-title" style="display: flex; align-items: center; gap: 6px; margin-bottom: 10px; color: #1e3a8a; font-size: 17px; font-weight: 800;">
-            환불 안내 <span style="font-size: 14px; font-weight: 600; color: #555555; background-color: #f1f5f9; padding: 2px 6px; border-radius: 4px; margin-left: 4px;">(입금만 한 경우)</span>
+            환불 안내 <span style="font-size: 14px; font-weight: 600; color: #555555; margin-left: 6px;">(입금만 한 경우)</span>
           </div>
           <ol style="padding-left: 20px; margin: 0; font-size: 15px; color: #000000; line-height: 1.6; font-weight: 500;">
             <li>주문 조회를 한 뒤 환불 받을 제품을 선택합니다.</li>
@@ -657,11 +657,11 @@
         <!-- 2. 반품 안내 -->
         <div style="margin-bottom: 24px;">
           <div class="refund-notice-title" style="display: flex; align-items: center; gap: 6px; margin-bottom: 10px; color: #1e3a8a; font-size: 17px; font-weight: 800;">
-            반품 안내 <span style="font-size: 14px; font-weight: 600; color: #555555; background-color: #f1f5f9; padding: 2px 6px; border-radius: 4px; margin-left: 4px;">(배송이 출발한 경우)</span>
+            반품 안내 <span style="font-size: 14px; font-weight: 600; color: #555555; margin-left: 6px;">(배송이 출발한 경우)</span>
           </div>
           <ol style="padding-left: 20px; margin: 0; font-size: 15px; color: #000000; line-height: 1.6; font-weight: 500;">
             <li style="margin-bottom: 6px;">주문 조회를 한 뒤 반품 받을 제품을 선택합니다.</li>
-            <li>배송비를 입금합니다. <span style="color: #dc2626; font-weight: 800; background-color: #ffe4e6; padding: 1px 4px; border-radius: 3px;">(*선입금 되어야 접수됩니다.)</span></li>
+            <li>배송비를 입금합니다. <span style="color: #dc2626; font-weight: 800; margin-left: 4px;">(*선입금 되어야 접수됩니다.)</span></li>
           </ol>
         </div>
 
@@ -819,7 +819,7 @@
         alert('환불 신청 중 오류가 발생했습니다. 다시 시도해주세요.');
         if (btn) {
           btn.disabled = false;
-          btn.textContent = '환불신청';
+          btn.textContent = '신청';
           btn.style.opacity = '1';
           btn.style.cursor = 'pointer';
         }
