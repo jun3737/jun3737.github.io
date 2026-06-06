@@ -1009,6 +1009,16 @@
         if (empty) ok = false;
       });
       if (!ok) { alert('빨간 테두리로 표시된 필수 항목을 모두 입력해주세요.'); return; }
+
+      // 전화번호 11자리 검증
+      const phoneEl = document.getElementById('d-phone');
+      const phoneDigits = phoneEl.value.replace(/[^0-9]/g, '');
+      if (phoneDigits.length !== 11) {
+        phoneEl.classList.add('invalid');
+        alert('전화번호를 올바르게 입력해주세요.\n숫자 11자리로 입력해주세요. (예: 01012345678)');
+        return;
+      }
+
       isSubmitting = true;
       const submitBtn = document.querySelector('#page-delivery .btn-next');
       submitBtn.textContent = '등록 중...'; submitBtn.style.opacity = '0.6';
