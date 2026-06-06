@@ -263,10 +263,11 @@
     .card-secondary .card-title { color: #3730a3; }
 
     .card-tracking {
-      background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-      box-shadow: 0 6px 24px rgba(14,165,233,0.30);
+      background: #e0f2fe;
+      box-shadow: 0 4px 16px rgba(14,165,233,0.15);
+      border: 1.5px solid #7dd3fc;
     }
-    .card-tracking .card-title { color: #e0f2fe; }
+    .card-tracking .card-title { color: #0369a1; }
 
     .card-refund {
       background: #fff1f2; box-shadow: 0 2px 14px rgba(229,57,53,0.10);
@@ -553,22 +554,19 @@
   <!-- PAGE 6: 배송 조회 -->
   <div id="page-tracking" class="page">
     <h1 class="page-title">배송 조회</h1>
-    <p class="page-sub">로젠 택배 운송장 번호를 입력해<br>배송 현황을 확인하세요.</p>
-    <div class="step-label"><span class="step-badge">1</span> 운송장 번호 입력</div>
+    <p class="page-sub">주문 시 입력한 전화번호로<br>배송 현황을 확인하세요.</p>
+    <div class="step-label"><span class="step-badge">1</span> 전화번호 입력</div>
     <div class="correct-card">
       <div class="field">
-        <label>운송장 번호 <span class="req">*</span></label>
-        <input type="text" id="tracking-number" placeholder="숫자만 입력 (10~14자리)"
-          inputmode="numeric" maxlength="14"
-          oninput="onTrackingInput(this)" style="letter-spacing:1px;">
-        <div class="input-hint">로젠 택배 운송장 번호를 입력해주세요.</div>
+        <label>전화번호 <span class="req">*</span></label>
+        <input type="text" id="tracking-phone" placeholder="010-0000-0000"
+          inputmode="numeric" maxlength="13"
+          oninput="formatPhone(this,'tracking-btn')">
+        <div class="input-hint">주문 시 입력한 전화번호를 입력해주세요.</div>
       </div>
       <button class="btn-lookup" id="tracking-btn" onclick="trackDelivery()">배송 조회</button>
     </div>
     <div id="tracking-result" style="width:100%; display:none; margin-top:8px;"></div>
-    <a href="https://www.logen.co.kr/service_info/tracking" target="_blank" class="tracking-ext-link">
-      🔗 로젠 택배 홈페이지 바로가기
-    </a>
     <button class="link-back" onclick="goTo('page-home')">처음으로 돌아가기</button>
   </div>
 
@@ -1067,38 +1065,76 @@
     }
 
     /* ── 배송 조회 ── */
-    function onTrackingInput(input) {
-      input.value = input.value.replace(/[^0-9]/g, '');
-      document.getElementById('tracking-btn').classList.toggle('active', input.value.length >= 10);
-    }
-
-    function trackDelivery() {
-      const num = document.getElementById('tracking-number').value.trim();
-      if (num.length < 10) { alert('운송장 번호를 정확히 입력해주세요. (10자리 이상)'); return; }
+    async function trackDelivery() {
+      const phone = document.getElementById('tracking-phone').value.trim();
+      if (!/^\d{3}-\d{4}-\d{4}$/.test(phone)) return;
+      const phoneClean = phone.replace(/-/g, '');
       const resultEl = document.getElementById('tracking-result');
       resultEl.style.display = 'block';
       resultEl.innerHTML = '<div class="tracking-card"><div style="text-align:center; padding:20px 0; color:var(--sub); font-size:14px;">🔍 조회 중입니다...</div></div>';
 
-      setTimeout(() => {
+      try {
+        const rows = await fetch(`${GAS_URL}?phone=${phoneClean}`).then(r => r.json());
+        const filtered = parseRows(rows, phoneClean);
+
+        if (!filtered.length) {
+          resultEl.innerHTML = `
+            <div class="tracking-card">
+              <div style="text-align:center; padding:20px 0;">
+                <div style="font-size:32px; margin-bottom:12px;">📭</div>
+                <div style="font-size:14px; font-weight:700; color:var(--text); margin-bottom:6px;">주문 내역이 없습니다.</div>
+                <div style="font-size:13px; color:var(--sub); line-height:1.6;">전화번호를 다시 확인해주세요.</div>
+              </div>
+            </div>`;
+          return;
+        }
+
+        // 운송장 번호는 15번째 열 = index 14
+        const invoiceNums = [...new Set(filtered.map(r => String(r[14] || '').trim()).filter(Boolean))];
+
+        if (!invoiceNums.length) {
+          resultEl.innerHTML = `
+            <div class="tracking-card">
+              <div style="text-align:center; padding:20px 0;">
+                <div style="font-size:32px; margin-bottom:12px;">📦</div>
+                <div style="font-size:15px; font-weight:800; color:var(--text); margin-bottom:8px;">배송 준비 중이에요</div>
+                <div style="font-size:13px; color:var(--sub); line-height:1.7;">아직 운송장 번호가 등록되지 않았습니다.<br>잠시 후 다시 확인해주세요.</div>
+              </div>
+              <div style="margin-top:16px; padding-top:14px; border-top:1px solid #f0f0f0;">
+                <div style="font-size:12px; color:var(--sub); margin-bottom:8px; font-weight:600;">📞 문의</div>
+                <a href="tel:15889988" style="display:flex; align-items:center; gap:10px; background:#f8fafc; border:1.5px solid #e5e7eb; border-radius:12px; padding:12px 14px; text-decoration:none; color:var(--text);">
+                  <span style="font-size:20px;">📞</span>
+                  <div>
+                    <div style="font-size:14px; font-weight:700;">로젠 택배 1588-9988</div>
+                    <div style="font-size:11px; color:var(--sub);">평일 09:00 ~ 18:00</div>
+                  </div>
+                </a>
+              </div>
+            </div>`;
+          return;
+        }
+
+        const cardsHtml = invoiceNums.map(num => `
+          <div style="margin-bottom:12px;">
+            <div style="font-size:13px; color:var(--sub); margin-bottom:6px;">운송장 번호: <b style="color:var(--text);">${num}</b></div>
+            <a href="https://www.logen.co.kr/service_info/tracking?invoice_no=${num}" target="_blank"
+              style="display:flex; align-items:center; justify-content:center; gap:8px;
+                background:#0284c7; border-radius:12px; padding:14px 16px;
+                text-decoration:none; color:#fff; font-size:15px; font-weight:700;">
+              🚚 배송 현황 확인하기
+            </a>
+          </div>`).join('');
+
         resultEl.innerHTML = `
           <div class="tracking-card">
             <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
-              <span style="font-size:26px;">📦</span>
+              <span style="font-size:26px;">🚚</span>
               <div>
                 <div style="font-size:16px; font-weight:800; color:var(--text);">로젠 택배</div>
-                <div style="font-size:13px; color:var(--sub);">운송장 번호: <b style="color:var(--text)">${num}</b></div>
+                <div style="font-size:13px; color:var(--sub);">배송이 시작되었습니다!</div>
               </div>
             </div>
-            <div style="background:#eff6ff; border:1.5px solid #bfdbfe; border-radius:12px; padding:14px 16px; margin-bottom:16px;">
-              <div style="font-size:13px; color:#1e40af; font-weight:700; margin-bottom:6px;">ℹ️ 조회 안내</div>
-              <div style="font-size:13px; color:#1e3a8a; line-height:1.7;">아래 버튼을 눌러 로젠 택배 홈페이지에서<br>실시간 배송 현황을 확인하세요.</div>
-            </div>
-            <a href="https://www.logen.co.kr/service_info/tracking?invoice_no=${num}" target="_blank"
-              style="display:flex; align-items:center; justify-content:center; gap:8px;
-                background:#0284c7; border-radius:12px; padding:15px 16px;
-                text-decoration:none; color:#fff; font-size:15px; font-weight:700; margin-bottom:12px;">
-              🚚 배송 현황 확인하기
-            </a>
+            ${cardsHtml}
             <div style="padding-top:14px; border-top:1px solid #f0f0f0;">
               <div style="font-size:12px; color:var(--sub); margin-bottom:8px; font-weight:600;">📞 로젠 택배 고객센터</div>
               <a href="tel:15889988" style="display:flex; align-items:center; gap:10px; background:#f8fafc; border:1.5px solid #e5e7eb; border-radius:12px; padding:12px 14px; text-decoration:none; color:var(--text);">
@@ -1110,7 +1146,9 @@
               </a>
             </div>
           </div>`;
-      }, 600);
+      } catch {
+        resultEl.innerHTML = '<div class="tracking-card"><div style="text-align:center; padding:20px 0; color:var(--red); font-size:14px; font-weight:600;">조회 중 오류가 발생했습니다. 다시 시도해주세요.</div></div>';
+      }
     }
 
     addItem();
