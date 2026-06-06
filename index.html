@@ -619,6 +619,7 @@
 
   <script>
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbwPHvzQuCoxri5HRNz3ZL2EpvMpyNyHU2t2-gHIXCQZ_2USq2AgpG7cpW67v9si4WCN/exec';
+    const DELIVERY_URL = 'https://script.google.com/macros/s/AKfycbxjNeQZBH2JeW1WzZA0mK_ttjXsjF_4iYv8VutxBYJTuRHfwByZjfFW3o4BbxW9vMpm/exec';
     let itemCount = 0;
     let isSubmitting = false;
 
@@ -1074,8 +1075,12 @@
       resultEl.innerHTML = '<div class="tracking-card"><div style="text-align:center; padding:20px 0; color:var(--sub); font-size:14px;">🔍 조회 중입니다...</div></div>';
 
       try {
-        const rows = await fetch(`${GAS_URL}?phone=${phoneClean}`).then(r => r.json());
-        const filtered = parseRows(rows, phoneClean);
+        const rows = await fetch(`${DELIVERY_URL}?phone=${phoneClean}`).then(r => r.json());
+        // 새 시트: 1열=휴대폰, 4열=운송장번호
+        const alt = phoneAlt(phoneClean);
+        const filtered = Array.isArray(rows)
+          ? rows.filter(r => String(r[1]) === phoneClean || String(r[1]) === alt)
+          : [];
 
         if (!filtered.length) {
           resultEl.innerHTML = `
@@ -1089,8 +1094,8 @@
           return;
         }
 
-        // 운송장 번호는 15번째 열 = index 14
-        const invoiceNums = [...new Set(filtered.map(r => String(r[14] || '').trim()).filter(Boolean))];
+        // 운송장 번호: 5번째 열 = index 4
+        const invoiceNums = [...new Set(filtered.map(r => String(r[4] || '').trim()).filter(Boolean))];
 
         if (!invoiceNums.length) {
           resultEl.innerHTML = `
@@ -1099,16 +1104,6 @@
                 <div style="font-size:32px; margin-bottom:12px;">📦</div>
                 <div style="font-size:15px; font-weight:800; color:var(--text); margin-bottom:8px;">배송 준비 중이에요</div>
                 <div style="font-size:13px; color:var(--sub); line-height:1.7;">아직 운송장 번호가 등록되지 않았습니다.<br>잠시 후 다시 확인해주세요.</div>
-              </div>
-              <div style="margin-top:16px; padding-top:14px; border-top:1px solid #f0f0f0;">
-                <div style="font-size:12px; color:var(--sub); margin-bottom:8px; font-weight:600;">📞 문의</div>
-                <a href="tel:15889988" style="display:flex; align-items:center; gap:10px; background:#f8fafc; border:1.5px solid #e5e7eb; border-radius:12px; padding:12px 14px; text-decoration:none; color:var(--text);">
-                  <span style="font-size:20px;">📞</span>
-                  <div>
-                    <div style="font-size:14px; font-weight:700;">로젠 택배 1588-9988</div>
-                    <div style="font-size:11px; color:var(--sub);">평일 09:00 ~ 18:00</div>
-                  </div>
-                </a>
               </div>
             </div>`;
           return;
@@ -1135,16 +1130,6 @@
               </div>
             </div>
             ${cardsHtml}
-            <div style="padding-top:14px; border-top:1px solid #f0f0f0;">
-              <div style="font-size:12px; color:var(--sub); margin-bottom:8px; font-weight:600;">📞 로젠 택배 고객센터</div>
-              <a href="tel:15889988" style="display:flex; align-items:center; gap:10px; background:#f8fafc; border:1.5px solid #e5e7eb; border-radius:12px; padding:12px 14px; text-decoration:none; color:var(--text);">
-                <span style="font-size:20px;">📞</span>
-                <div>
-                  <div style="font-size:14px; font-weight:700;">1588-9988</div>
-                  <div style="font-size:11px; color:var(--sub);">평일 09:00 ~ 18:00 (주말·공휴일 휴무)</div>
-                </div>
-              </a>
-            </div>
           </div>`;
       } catch {
         resultEl.innerHTML = '<div class="tracking-card"><div style="text-align:center; padding:20px 0; color:var(--red); font-size:14px; font-weight:600;">조회 중 오류가 발생했습니다. 다시 시도해주세요.</div></div>';
