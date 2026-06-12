@@ -496,7 +496,7 @@
       <div class="summary-row"><span>상품 금액</span><span id="sum-product">0원</span></div>
       <div class="summary-row"><span>배송비</span><span id="sum-shipping">4,000원</span></div>
       <div class="summary-total"><span>최종 금액</span><span id="sum-total">0원</span></div>
-      <p style="margin-top:10px; font-size:12px; font-weight:700; color:#e53935; line-height:1.6;">*같은 번호로 여러 번 주문했을 경우 배송비는 총 1회만 측정됩니다. 정확한 금액은 주문 조회 탭에서 확인해주세요.</p>
+      <p style="margin-top:10px; font-size:12px; font-weight:700; color:#e53935; line-height:1.6;">*여러번 주문했을 경우 배송비는 총 1회만 측정됩니다. 정확한 금액은 주문 조회 탭에서 확인해주세요</p>
     </div>
     <div class="bottom-btns">
       <button class="btn-back" onclick="goTo('page-home')">처음으로</button>
@@ -972,16 +972,16 @@
     }
 
     async function saveOrder() {
-      const v = id => document.getElementById(id)?.value.trim() || '';
+      const v = id => String(document.getElementById(id)?.value.trim() || '');
       const phone = v('d-phone').replace(/-/g,'');
       const items = [];
       document.querySelectorAll('#items-container .item-card').forEach(card => {
         const inputs = card.querySelectorAll('.field input');
         items.push({
-          name:  inputs[0]?.value || '',
+          name:  String(inputs[0]?.value || ''),
           price: parseInt(inputs[1]?.value) || 0,
-          size:  inputs[2]?.value || '',
-          color: inputs[3]?.value || '',
+          size:  String(inputs[2]?.value || ''),
+          color: String(inputs[3]?.value || ''),
           qty:   parseInt(card.querySelector('.qty-display')?.textContent) || 1
         });
       });
@@ -989,11 +989,19 @@
       const productTotal = items.reduce((s, i) => s + i.price * i.qty, 0);
       try {
         await postGAS({
-          phone, youtube:v('d-youtube'), depositor:v('d-name'),
-          zip:v('d-zip'), addr:v('d-addr'), addr2:v('d-addr2'), memo:v('d-memo'),
-          pmemo:v('p-memo'),
-          items, shipping, productTotal, total: productTotal + shipping,
-          date: new Date().toLocaleString('ko-KR', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' })
+          phone:       String(phone),
+          youtube:     v('d-youtube'),
+          depositor:   v('d-name'),
+          zip:         v('d-zip'),
+          addr:        v('d-addr'),
+          addr2:       v('d-addr2'),
+          memo:        v('d-memo'),
+          pmemo:       v('p-memo'),
+          items,
+          shipping,
+          productTotal,
+          total: productTotal + shipping,
+          date:  String(new Date().toLocaleString('ko-KR', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' }))
         });
       } catch(e) { console.error('저장 실패:', e); }
     }
