@@ -981,7 +981,7 @@
           name:  String(inputs[0]?.value || ''),
           price: parseInt(inputs[1]?.value) || 0,
           size:  String(inputs[2]?.value || ''),
-          color: String(inputs[3]?.value || ''),
+          color: String(inputs[3]?.value.trim() || '랜덤'),
           qty:   parseInt(card.querySelector('.qty-display')?.textContent) || 1
         });
       });
