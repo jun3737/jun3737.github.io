@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>땡큐몰</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet"/>
+  <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue: #3B5BDB;
+      --text: #1a1a2e;
+      --sub: #6b7280;
+      --bg: #edeae4;
+      --white: #ffffff;
+      --red: #e53935;
+      --card-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      --transition: transform 0.25s cubic-bezier(.22,.68,0,1.4), box-shadow 0.25s ease;
+      --border: 1.5px solid #e5e7eb;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 10px;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── 페이지 공통 ── */
+    .page { display: none; }
+    .page.active { display: flex; flex-direction: column; align-items: center; width: 100%; }
+
+    .page-wrap {
+      padding: 40px 20px 48px;
+      width: 100%;
+      max-width: 420px;
+      margin: 0 auto;
+      gap: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── 공통 카드 ── */
+    .white-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 20px 18px;
+      width: 100%;
+      box-shadow: var(--card-shadow);
+    }
+
+    /* ── 공통 타이틀/서브 ── */
+    .page-title {
+      font-size: 26px; font-weight: 900; color: var(--text);
+      margin-bottom: 8px; text-align: center; letter-spacing: -0.5px;
+    }
+    .page-sub {
+      font-size: 13px; color: var(--sub);
+      margin-bottom: 24px; text-align: center; line-height: 1.6;
+    }
+
+    /* ── 공통 버튼 ── */
+    .btn-back {
+      flex: 1; background: #9ca3af; border: none; border-radius: 14px;
+      padding: 16px; font-size: 15px; font-weight: 700; color: #fff;
+      font-family: 'Noto Sans KR', sans-serif; cursor: pointer;
+    }
+    .btn-back:active { background: #6b7280; }
+    .btn-next {
+      flex: 2; background: var(--blue); border: none; border-radius: 14px;
+      padding: 16px; font-size: 15px; font-weight: 700; color: #fff;
+      font-family: 'Noto Sans KR', sans-serif; cursor: pointer;
+    }
+    .btn-next:active { background: #2f4bbf; }
+    .bottom-btns { display: flex; gap: 10px; width: 100%; padding-top: 4px; }
+
+    .btn-lookup {
+      width: 100%; border: none; border-radius: var(--radius-md); padding: 15px;
+      font-size: 15px; font-weight: 700; color: #fff;
+      font-family: 'Noto Sans KR', sans-serif; cursor: pointer;
+      background: #c7cdd8; transition: background 0.2s;
+      margin-top: 6px;
+    }
+    .btn-lookup.active { background: var(--blue); }
+    .btn-lookup.active:active { background: #2f4bbf; }
+
+    .link-back {
+      background: none; border: none; color: var(--sub);
+      font-size: 13px; font-family: 'Noto Sans KR', sans-serif;
+      cursor: pointer; text-decoration: underline; padding: 8px 16px;
+    }
+    .link-back:hover { color: var(--text); }
+
+    /* ── step badge ── */
+    .step-badge {
+      background: var(--blue); color: #fff;
+      border-radius: 6px; padding: 2px 8px;
+      font-size: 13px; font-weight: 700;
+    }
+    .step-label {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 15px; font-weight: 700; color: var(--text); width: 100%;
+    }
+
+    /* ── 폼 필드 ── */
+    .field { margin-bottom: 14px; }
+    .field label { font-size: 13px; font-weight: 600; color: var(--text); display: block; margin-bottom: 6px; }
+    .field label .req { color: var(--red); margin-left: 2px; }
+    .field input[type="text"],
+    .field input[type="number"],
+    .field textarea {
+      width: 100%; border: var(--border); border-radius: var(--radius-sm);
+      padding: 11px 14px; font-size: 14px; font-family: 'Noto Sans KR', sans-serif;
+      color: var(--text); outline: none; background: #fafafa;
+      transition: border-color 0.15s;
+    }
+    .field textarea { resize: none; display: block; }
+    .field input:focus,
+    .field textarea:focus { border-color: var(--blue); background: #fff; }
+    .field input[readonly]:focus { border-color: #e5e7eb; background: #e9ecef; outline: none; }
+    .field input::placeholder,
+    .field textarea::placeholder { color: #b0b7c3; }
+    .field input.invalid, .field textarea.invalid {
+      border-color: var(--red) !important; background: #fff5f5 !important;
+    }
+    .field input[readonly].invalid {
+      border-color: #c62828 !important; background: #ffebee !important;
+    }
+    .input-hint { font-size: 12px; color: var(--sub); margin-top: 6px; }
+
+    /* ── 안내 박스 (노란색) ── */
+    .guide-box {
+      background: #fffbe6; border: 1.5px solid #ffe066;
+      border-radius: var(--radius-md); padding: 14px 16px; width: 100%;
+    }
+    .guide-title {
+      font-size: 13px; font-weight: 700; color: #7a5c00;
+      margin-bottom: 6px; display: flex; align-items: center; gap: 6px;
+    }
+    .guide-box p { font-size: 12px; color: #7a5c00; line-height: 1.7; }
+
+    /* ── 조회 결과 공통 ── */
+    .result-empty {
+      text-align: center; color: var(--sub); font-size: 13px; padding: 24px 0; line-height: 1.6;
+    }
+    .result-empty span { display: block; font-size: 11.5px; color: #a1a1aa; margin-top: 4px; }
+    .result-order-card {
+      background: var(--white); border-radius: 14px; padding: 16px 18px;
+      box-shadow: var(--card-shadow); margin-bottom: 10px;
+    }
+    .result-order-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+    }
+    .result-item-row {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 13px; padding: 8px 0; border-bottom: 1px solid #f0f0f0;
+    }
+    .result-item-row:last-child { border-bottom: none; }
+    .result-item-name { font-weight: 600; color: var(--text); }
+    .result-item-detail { font-size: 12px; color: var(--sub); margin-top: 2px; }
+    .result-total-row {
+      display: flex; justify-content: space-between;
+      font-size: 14px; font-weight: 800; color: var(--blue);
+      border-top: 1.5px solid #e5e7eb; padding-top: 10px; margin-top: 6px;
+    }
+    /* 인라인 버튼들 (수정/삭제/신청) */
+    .btn-row-edit, .btn-row-delete, .btn-row-apply {
+      border-radius: 8px; padding: 4px 10px;
+      font-size: 12px; font-weight: 600; cursor: pointer;
+      font-family: 'Noto Sans KR', sans-serif; white-space: nowrap;
+    }
+    .btn-row-edit   { background: none; border: 1.5px solid #d1d5db; color: var(--sub); }
+    .btn-row-delete { background: none; border: 1.5px solid #fca5a5; color: #e53935; }
+    .btn-row-apply  {
+      background: #fff1f2; border: 1.5px solid #fca5a5;
+      color: #e53935; padding: 5px 12px; font-size: 13px;
+    }
+
+    /* 인라인 수정폼 */
+    .edit-row {
+      display: none; background: #f8faff; border-radius: var(--radius-md);
+      padding: 14px; margin: 6px 0; border: 1.5px solid #a5b4fc;
+    }
+    .edit-row-inner { display: flex; flex-direction: column; gap: 8px; }
+    .edit-field {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .edit-field label {
+      font-size: 12px; font-weight: 600; color: var(--sub); width: 40px; flex-shrink: 0;
+    }
+    .edit-field input {
+      flex: 1; border: 1.5px solid #e5e7eb; border-radius: 8px;
+      padding: 7px 10px; font-size: 13px; font-family: 'Noto Sans KR', sans-serif; outline: none;
+    }
+    .edit-btns { display: flex; gap: 8px; margin-top: 4px; }
+    .edit-btn-cancel {
+      flex: 1; background: #9ca3af; border: none; border-radius: var(--radius-sm);
+      padding: 10px; font-size: 13px; font-weight: 700; color: #fff;
+      cursor: pointer; font-family: 'Noto Sans KR', sans-serif;
+    }
+    .edit-btn-save {
+      flex: 2; background: var(--blue); border: none; border-radius: var(--radius-sm);
+      padding: 10px; font-size: 13px; font-weight: 700; color: #fff;
+      cursor: pointer; font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    /* ── PAGE 1: 홈 ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    #page-home {
+      padding: 20px 20px 15vh;
+      width: 100%; max-width: 420px; margin: 0 auto;
+      min-height: 100dvh; justify-content: center; gap: 12px;
+    }
+    .home-title {
+      font-size: 26px; font-weight: 900; color: var(--text);
+      margin-bottom: 8px; letter-spacing: -0.5px; text-align: center;
+      animation: fadeUp 0.5s 0.1s both;
+    }
+    .home-sub {
+      font-size: 13px; color: var(--sub); margin-bottom: 32px; text-align: center;
+      animation: fadeUp 0.5s 0.2s both;
+    }
+    .cards-top { width: 100%; margin-bottom: 0; }
+    .cards-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+    .cards-account { width: 100%; }
+
+    .card {
+      border: none; border-radius: 20px; padding: 28px 16px;
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      cursor: pointer;
+      transition: var(--transition);
+      animation: fadeUp 0.5s both;
+    }
+    .card:nth-child(1) { animation-delay: 0.3s; }
+    .card:nth-child(2) { animation-delay: 0.4s; }
+    .card:hover  { transform: translateY(-6px); box-shadow: 0 16px 36px rgba(0,0,0,0.18); }
+    .card:active { transform: translateY(-2px); }
+    .card-icon  { font-size: 36px; line-height: 1; }
+    .card-title { font-size: 17px; font-weight: 800; letter-spacing: -0.3px; }
+    .card-desc  { font-size: 12px; font-weight: 400; text-align: center; line-height: 1.5; }
+
+    .card-primary {
+      background: #312e81; box-shadow: 0 6px 24px rgba(49,46,129,0.32);
+    }
+    .card-primary .card-title, .card-primary .card-desc { color: #e0e7ff; }
+    .card-primary .card-icon { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
+
+    .card-secondary {
+      background: #ede9fe; box-shadow: 0 4px 16px rgba(124,58,237,0.12);
+      border: 1.5px solid #c4b5fd;
+    }
+    .card-secondary .card-title { color: #3730a3; }
+
+    .card-tracking {
+      background: #e0f2fe;
+      box-shadow: 0 4px 16px rgba(14,165,233,0.15);
+      border: 1.5px solid #7dd3fc;
+    }
+    .card-tracking .card-title { color: #0369a1; }
+
+    .card-refund {
+      background: #fff1f2; box-shadow: 0 2px 14px rgba(229,57,53,0.10);
+      border: 1.5px solid #fecdd3;
+      flex-direction: row; justify-content: center; gap: 14px;
+    }
+    .card-refund .card-title { color: #c62828; }
+    .card-refund .card-text { display: flex; flex-direction: column; gap: 4px; }
+
+    /* 계좌 카드 */
+    .card-account {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+      border-radius: 20px; padding: 22px 24px; width: 100%;
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; border: none;
+      transition: var(--transition);
+      box-shadow: 0 6px 24px rgba(15,52,96,0.35);
+      position: relative; overflow: hidden;
+      animation: fadeUp 0.5s 0.55s both;
+    }
+    .card-account::before {
+      content: ''; position: absolute; top: -30px; right: -30px;
+      width: 120px; height: 120px; background: rgba(255,255,255,0.04); border-radius: 50%;
+    }
+    .card-account::after {
+      content: ''; position: absolute; bottom: -20px; left: 30px;
+      width: 80px; height: 80px; background: rgba(255,255,255,0.03); border-radius: 50%;
+    }
+    .card-account:hover  { transform: translateY(-4px); box-shadow: 0 14px 36px rgba(15,52,96,0.45); }
+    .card-account:active { transform: translateY(-1px); }
+    .card-account-left { display: flex; flex-direction: column; gap: 6px; text-align: left; }
+    .card-account-label { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.5); letter-spacing: 0.8px; text-transform: uppercase; }
+    .card-account-bank  { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.75); }
+    .card-account-number { font-size: 20px; font-weight: 800; color: #fff; letter-spacing: 1.5px; }
+    .card-account-name  { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.55); }
+    .card-account-right { display: flex; flex-direction: column; align-items: center; gap: 6px; z-index: 1; }
+    .copy-icon { font-size: 28px; }
+    .copy-hint { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.45); letter-spacing: 0.3px; }
+
+    /* 복사 토스트 */
+    .copy-toast {
+      position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: #1a1a2e; color: #fff; padding: 12px 24px; border-radius: 40px;
+      font-size: 13px; font-weight: 700; box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+      opacity: 0; transition: opacity 0.2s ease, transform 0.2s ease;
+      pointer-events: none; z-index: 9999; white-space: nowrap;
+    }
+    .copy-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── PAGE 2: 주문 입력 ── */
+    #page-order { padding: 24px 16px 48px; width: 100%; max-width: 420px; margin: 0 auto; gap: 12px; }
+    #items-container { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+    .item-card { background: var(--white); border-radius: var(--radius-lg); padding: 20px 18px; width: 100%; box-shadow: var(--card-shadow); }
+    .item-card-title {
+      font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 16px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .delete-btn {
+      background: none; border: none; color: var(--red);
+      font-size: 13px; font-weight: 600; font-family: 'Noto Sans KR', sans-serif; cursor: pointer; padding: 0;
+    }
+    .price-input { width: 100% !important; }
+    .qty-wrap { display: flex; align-items: center; }
+    .qty-btn {
+      width: 36px; height: 36px; border: var(--border); background: #f3f4f6;
+      border-radius: 8px; font-size: 18px; font-weight: 700; color: var(--text);
+      cursor: pointer; display: flex; align-items: center; justify-content: center; user-select: none;
+    }
+    .qty-btn:active { background: #e5e7eb; }
+    .qty-display {
+      width: 44px; height: 36px;
+      border-top: var(--border); border-bottom: var(--border); border-left: none; border-right: none;
+      background: #fff; text-align: center; font-size: 15px; font-weight: 600; color: var(--text);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .add-item-btn {
+      width: 100%; border: 1.5px dashed #b0b7c3; background: #f0f2f5;
+      border-radius: 14px; padding: 16px; font-size: 14px; font-weight: 600;
+      color: #8a93a2; cursor: pointer; font-family: 'Noto Sans KR', sans-serif;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+    .add-item-btn:hover { border-color: var(--blue); color: var(--blue); background: #eef1fb; }
+    .shipping-box {
+      background: #f7f8fa; border: var(--border); border-radius: 14px; padding: 16px 18px; width: 100%;
+    }
+    .shipping-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .shipping-row span:first-child { font-size: 14px; font-weight: 600; color: var(--text); }
+    .shipping-row span:last-child  { font-size: 14px; font-weight: 700; color: var(--text); }
+    .island-check { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--sub); cursor: pointer; }
+    .island-check input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--blue); }
+    .summary-box {
+      background: #eef2ff; border: 1.5px solid #a5b4fc; border-radius: 14px; padding: 16px 18px;
+      width: 100%; display: none;
+    }
+    .summary-box.visible { display: block; }
+    .summary-row { display: flex; justify-content: space-between; font-size: 13px; color: #6272b0; margin-bottom: 6px; }
+    .summary-total {
+      display: flex; justify-content: space-between;
+      font-size: 15px; font-weight: 800; color: var(--blue);
+      border-top: 1.5px solid #a5b4fc; padding-top: 10px; margin-top: 4px;
+    }
+
+    /* ── PAGE 3: 주문 정정 ── */
+    #page-correct { padding: 80px 20px 48px; width: 100%; max-width: 420px; margin: 0 auto; gap: 12px; }
+    .correct-card { background: var(--white); border-radius: var(--radius-lg); padding: 22px 20px; width: 100%; box-shadow: var(--card-shadow); }
+
+    /* ── PAGE 4: 배송지 ── */
+    #page-delivery { padding: 24px 16px 48px; width: 100%; max-width: 420px; margin: 0 auto; gap: 12px; }
+    .delivery-card { background: var(--white); border-radius: var(--radius-lg); padding: 20px 18px; width: 100%; box-shadow: var(--card-shadow); }
+    .addr-row { display: flex; gap: 8px; }
+    .addr-row input { flex: 1; }
+    .btn-zipcode {
+      background: #374151; color: #fff; border: none; border-radius: var(--radius-sm);
+      padding: 11px 14px; font-size: 13px; font-weight: 700;
+      font-family: 'Noto Sans KR', sans-serif; cursor: pointer; white-space: nowrap; flex-shrink: 0;
+    }
+    .btn-zipcode:active { background: #1f2937; }
+
+    /* ── PAGE 5: 환불 ── */
+    #page-refund { padding: 40px 20px 48px; width: 100%; max-width: 420px; margin: 0 auto; gap: 12px; }
+    .refund-notice { background: var(--white); border-radius: var(--radius-lg); padding: 20px 18px; width: 100%; box-shadow: var(--card-shadow); }
+    .refund-notice-box { background: #fffbe6; border-radius: var(--radius-sm); padding: 12px 14px; margin-top: 14px; }
+    .refund-notice-box p { font-size: 12px; color: #7a5c00; line-height: 1.8; }
+
+    /* ── PAGE 6: 배송 조회 ── */
+    #page-tracking { padding: 40px 20px 48px; width: 100%; max-width: 420px; margin: 0 auto; gap: 12px; }
+    .tracking-card { background: var(--white); border-radius: var(--radius-lg); padding: 20px 18px; width: 100%; box-shadow: var(--card-shadow); }
+    .tracking-ext-link {
+      width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
+      background: #fff; border: 1.5px solid #d1d5db; border-radius: 14px; padding: 14px 16px;
+      text-decoration: none; color: #374151; font-size: 13px; font-weight: 600;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05); transition: background 0.15s;
+    }
+    .tracking-ext-link:hover { background: #f9fafb; }
+  </style>
+</head>
+<body>
+
+  <!-- PAGE 1: 서비스 선택 -->
+  <div id="page-home" class="page active">
+    <h1 class="home-title">땡큐몰</h1>
+    <p class="home-sub">원하시는 서비스를 선택해주세요.</p>
+
+    <div class="cards-top">
+      <button class="card card-primary" onclick="resetOrderForm(); goTo('page-order')" style="width:100%; padding:36px 16px;">
+        <div class="card-icon" style="font-size:44px;">🛒</div>
+        <div class="card-title" style="font-size:20px;">주문하기</div>
+        <div class="card-desc">새 주문 정보를 입력합니다</div>
+      </button>
+    </div>
+
+    <div class="cards-bottom">
+      <button class="card card-secondary" onclick="goTo('page-correct')" style="padding:24px 12px; gap:10px;">
+        <div class="card-icon">📝</div>
+        <div class="card-title">주문 조회•수정</div>
+      </button>
+      <button class="card card-tracking" onclick="goTo('page-tracking')" style="padding:24px 12px; gap:10px;">
+        <div class="card-icon">🚚</div>
+        <div class="card-title">배송 조회</div>
+      </button>
+    </div>
+
+    <div style="width:100%;">
+      <button class="card card-refund" onclick="goTo('page-refund')" style="width:100%; padding:20px 16px; gap:14px;">
+        <div class="card-icon" style="font-size:28px;">💸</div>
+        <div class="card-text"><div class="card-title">환불하기</div></div>
+      </button>
+    </div>
+
+    <div class="cards-account">
+      <button class="card-account" onclick="copyAccount()">
+        <div class="card-account-left">
+          <span class="card-account-label">입금 계좌</span>
+          <span class="card-account-bank">카카오뱅크</span>
+          <span class="card-account-number">3333-31-4284477</span>
+          <span class="card-account-name">오은정</span>
+        </div>
+        <div class="card-account-right">
+          <span class="copy-icon">📋</span>
+          <span class="copy-hint">탭하여 복사</span>
+        </div>
+      </button>
+    </div>
+  </div>
+
+  <div class="copy-toast" id="copy-toast">✅ 계좌번호가 복사되었습니다</div>
+
+  <!-- PAGE 3: 주문 정정 -->
+  <div id="page-correct" class="page">
+    <h1 class="page-title">주문 정정</h1>
+    <p class="page-sub">전화번호로 주문을 조회하고 옷 항목을 수정하거나 삭제할 수 있습니다.</p>
+    <div class="step-label"><span class="step-badge">1</span> 주문 조회</div>
+    <div class="correct-card">
+      <div class="field">
+        <label>전화번호 <span class="req">*</span></label>
+        <input type="text" id="phone-input" placeholder="010-0000-0000"
+          inputmode="numeric" maxlength="13"
+          oninput="formatPhone(this,'lookup-btn')" style="width:100%">
+        <div class="input-hint">주문 시 입력한 전화번호를 입력해주세요.</div>
+      </div>
+      <button class="btn-lookup" id="lookup-btn" onclick="lookupOrder()">주문 조회</button>
+    </div>
+    <div id="lookup-result" style="width:100%; display:none; margin-top:8px;"></div>
+    <button class="link-back" onclick="goTo('page-home')">처음으로 돌아가기</button>
+  </div>
+
+  <!-- PAGE 2: 주문 입력 -->
+  <div id="page-order" class="page">
+    <div class="guide-box">
+      <div class="guide-title">👕 1단계 : 주문하실 옷 정보를 입력해주세요</div>
+      <p>옷 메뉴 이름, 가격, 사이즈, 색상을 정확히 입력해주세요.<br>여러 벌 주문 시 [+ 추가 옷 입력] 버튼을 눌러주세요.</p>
+    </div>
+    <div id="items-container"></div>
+    <button class="add-item-btn" onclick="addItem()">+ 추가 옷 입력</button>
+    <div class="shipping-box">
+      <div class="shipping-row">
+        <span>배송비</span>
+        <span id="shipping-display">4,000원</span>
+      </div>
+      <label class="island-check">
+        <input type="checkbox" id="island-check" onchange="updateShipping()">
+        도서산간지역 (배송비 6,000원)
+      </label>
+    </div>
+    <div class="summary-box" id="summary-box">
+      <div class="summary-row"><span>상품 금액</span><span id="sum-product">0원</span></div>
+      <div class="summary-row"><span>배송비</span><span id="sum-shipping">4,000원</span></div>
+      <div class="summary-total"><span>최종 금액</span><span id="sum-total">0원</span></div>
+      <p style="margin-top:10px; font-size:12px; font-weight:700; color:#e53935; line-height:1.6;">*여러번 주문했을 경우 배송비는 총 1회만 측정됩니다. 정확한 금액은 주문 조회 탭에서 확인해주세요</p>
+    </div>
+    <div class="bottom-btns">
+      <button class="btn-back" onclick="goTo('page-home')">처음으로</button>
+      <button class="btn-next" onclick="validateOrder()">다음 (배송지 입력)</button>
+    </div>
+  </div>
+
+  <!-- PAGE 4: 배송지 입력 -->
+  <div id="page-delivery" class="page">
+    <div class="guide-box">
+      <div class="guide-title">📍 2단계 : 배송 정보를 입력해주세요</div>
+      <p>이름, 전화번호, 주소를 반드시 정확하게 입력해주세요.<br>잘못된 정보 입력 시 배송이 지연되거나 불가할 수 있습니다.</p>
+    </div>
+    <div class="delivery-card">
+      <div class="field">
+        <label>YouTube 닉네임 <span class="req">*</span></label>
+        <input id="d-youtube" type="text" placeholder="라이브 채팅에서 사용하는 닉네임">
+        <div class="input-hint">주문 자동 매칭에 사용됩니다. 정확하게 입력해주세요.</div>
+      </div>
+      <div class="field">
+        <label>입금자명 <span class="req">*</span></label>
+        <input id="d-name" type="text" placeholder="홍길동">
+      </div>
+      <div class="field">
+        <label>전화번호 <span class="req">*</span></label>
+        <input id="d-phone" type="text" placeholder="01000000000" inputmode="numeric"
+          maxlength="11" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,11)">
+        <div class="input-hint">숫자만 입력해주세요. 하이픈(-) 없이 입력해주세요.</div>
+      </div>
+      <div class="field">
+        <label>주소 <span class="req">*</span></label>
+        <div class="addr-row" style="margin-bottom:8px;">
+          <input id="d-zip" type="text" placeholder="우편번호" readonly style="background:#e9ecef; cursor:default; color:#6b7280;">
+          <button class="btn-zipcode" onclick="searchAddress()">우편번호 검색</button>
+        </div>
+        <input id="d-addr" type="text" placeholder="주소를 검색해주세요" readonly style="width:100%; margin-bottom:8px; background:#e9ecef; cursor:default; color:#6b7280;">
+        <input id="d-addr2" type="text" placeholder="상세주소 (동/호수 등)" style="width:100%;">
+      </div>
+      <div class="field" style="margin-bottom:20px;">
+        <label>배송요청사항 <span style="color:#888; font-size:12px; font-weight:400; margin-left:4px;">(선택)</span></label>
+        <textarea id="d-memo" rows="2" placeholder="예: 부재 시 경비실에 맡겨주세요"></textarea>
+        <div class="input-hint" style="color:#d97706; font-weight:500;">* 배송 기사가 읽는 메시지입니다.</div>
+      </div>
+      <div class="field" style="margin-bottom:20px;">
+        <label>주문요청사항 <span style="color:#888; font-size:12px; font-weight:400; margin-left:4px;">(선택)</span></label>
+        <textarea id="p-memo" rows="2" placeholder="예: 화이트 없으면 블랙으로 주세요"></textarea>
+        <div class="input-hint" style="color:#d97706; font-weight:500;">* 땡큐몰 사장님이 읽는 메시지입니다.</div>
+      </div>
+    </div>
+    <div class="bottom-btns">
+      <button class="btn-back" onclick="goTo('page-order')">이전</button>
+      <button class="btn-next" onclick="validateDelivery()">등록하기</button>
+    </div>
+  </div>
+
+  <!-- PAGE 6: 배송 조회 -->
+  <div id="page-tracking" class="page">
+    <h1 class="page-title">배송 조회</h1>
+    <p class="page-sub">주문 시 입력한 전화번호로<br>배송 현황을 확인하세요.</p>
+    <div class="step-label"><span class="step-badge">1</span> 전화번호 입력</div>
+    <div class="correct-card">
+      <div class="field">
+        <label>전화번호 <span class="req">*</span></label>
+        <input type="text" id="tracking-phone" placeholder="010-0000-0000"
+          inputmode="numeric" maxlength="13"
+          oninput="formatPhone(this,'tracking-btn')">
+        <div class="input-hint">주문 시 입력한 전화번호를 입력해주세요.</div>
+      </div>
+      <button class="btn-lookup" id="tracking-btn" onclick="trackDelivery()">배송 조회</button>
+    </div>
+    <div id="tracking-result" style="width:100%; display:none; margin-top:8px;"></div>
+    <button class="link-back" onclick="goTo('page-home')">처음으로 돌아가기</button>
+  </div>
+
+  <!-- PAGE 5: 환불하기 -->
+  <div id="page-refund" class="page">
+    <h2 class="page-title">환불/반품 접수</h2>
+    <p class="page-sub">주문 정보를 확인하고 환불 또는 반품을 접수할 수 있습니다.</p>
+
+    <div class="refund-notice">
+      <div style="background:#fff1f2; border:1px solid #fecdd3; border-radius:8px; padding:12px 16px; margin-bottom:20px; font-size:14px; line-height:1.6; color:#dc2626; font-weight:700;">
+        * 입금을 안 했는데 상품 주문을 취소하고 싶은 경우에는 주문 정정 탭에서 주문 조회를 한 뒤 삭제를 눌러주세요
+      </div>
+      <div style="margin-bottom:24px;">
+        <div style="color:#1e3a8a; font-size:17px; font-weight:800; display:flex; align-items:center; gap:6px; margin-bottom:10px;">
+          환불 안내 <span style="font-size:14px; font-weight:600; color:#555; margin-left:6px;">(입금만 한 경우)</span>
+        </div>
+        <ol style="padding-left:20px; font-size:15px; color:#000; line-height:1.6; font-weight:500;">
+          <li>주문 조회를 한 뒤 환불 받을 제품을 선택합니다.</li>
+        </ol>
+      </div>
+      <div style="margin-bottom:24px;">
+        <div style="color:#1e3a8a; font-size:17px; font-weight:800; display:flex; align-items:center; gap:6px; margin-bottom:10px;">
+          반품 안내 <span style="font-size:14px; font-weight:600; color:#555; margin-left:6px;">(배송이 출발한 경우)</span>
+        </div>
+        <ol style="padding-left:20px; font-size:15px; color:#000; line-height:1.6; font-weight:500;">
+          <li style="margin-bottom:6px;">주문 조회를 한 뒤 반품 받을 제품을 선택합니다.</li>
+          <li>배송비를 입금합니다. <span style="color:#dc2626; font-weight:800; margin-left:4px;">(*선입금 되어야 접수됩니다.)</span></li>
+        </ol>
+      </div>
+      <div class="refund-notice-box" style="font-size:14px; line-height:1.6; font-weight:700; color:#713f12; padding:12px 16px;">
+        <p style="margin:0 0 6px;">** 주문 후 3일 이상 지난 제품은 환불이 어렵습니다</p>
+        <p style="margin:0;">** 반품시에는 택과 폴리백은 받으신 그대로 보내주셔야 검수가 가능합니다.</p>
+      </div>
+    </div>
+
+    <div class="step-label"><span class="step-badge">1</span> 주문 조회</div>
+    <div class="correct-card">
+      <div class="field">
+        <label>전화번호 <span class="req">*</span></label>
+        <input type="text" id="refund-phone" placeholder="010-0000-0000"
+          inputmode="numeric" maxlength="13"
+          oninput="formatPhone(this,'refund-lookup-btn')" style="width:100%">
+        <div class="input-hint">회원 등록 시 입력한 전화번호를 입력해주세요.</div>
+      </div>
+      <button class="btn-lookup" id="refund-lookup-btn" onclick="lookupRefund()">주문 조회</button>
+    </div>
+    <div id="refund-result" style="width:100%; display:none; margin-top:8px;"></div>
+    <button class="link-back" onclick="goTo('page-home')">처음으로 돌아가기</button>
+  </div>
+
+  <script>
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbybi0M4Rm14qg_s2rW9QydTIhrO09M1kZqp2g0_3J7-qYe7Lidpfal1kmZW02Z5BnBr/exec';
+    const DELIVERY_URL = 'https://script.google.com/macros/s/AKfycbxMk5cAowwbhgxVhlettJKrWQewVx823HJdIyzuqhsGAp9euyCf-Rqo5xrMBKX9CPVN/exec';
+    let itemCount = 0;
+    let isSubmitting = false;
+
+    /* ── 네비게이션 ── */
+    function goTo(pageId, push = true) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+      window.scrollTo(0, 0);
+      if (push) history.pushState({ pageId }, '', '');
+    }
+    window.addEventListener('popstate', e => goTo(e.state?.pageId || 'page-home', false));
+    history.replaceState({ pageId: 'page-home' }, '', '');
+
+    /* ── 공통 GAS fetch ── */
+    function postGAS(body) {
+      return fetch(GAS_URL, {
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+    }
+
+    /* ── 전화번호 포맷 (공통) ── */
+    function formatPhone(input, btnId) {
+      const v = input.value.replace(/\D/g, '');
+      if      (v.length <= 3) input.value = v;
+      else if (v.length <= 7) input.value = `${v.slice(0,3)}-${v.slice(3)}`;
+      else                    input.value = `${v.slice(0,3)}-${v.slice(3,7)}-${v.slice(7,11)}`;
+      document.getElementById(btnId).classList.toggle('active', /^\d{3}-\d{4}-\d{4}$/.test(input.value));
+    }
+
+    /* ── phoneAlt 헬퍼 ── */
+    function phoneAlt(clean) {
+      return clean.startsWith('0') ? clean.slice(1) : '0' + clean;
+    }
+
+    /* ── 합계 재계산 공통 ── */
+    function recalcCardTotal(card) {
+      const rows = card.querySelectorAll('.result-item-row');
+      let total = 0;
+      rows.forEach(r => {
+        total += parseInt(r.querySelector('.item-price')?.textContent.replace(/[^0-9]/g,'')) || 0;
+      });
+      const shippingMatch = card.querySelector('.result-total-row span:first-child')?.textContent.match(/[\d,]+원/);
+      const shipping = shippingMatch ? parseInt(shippingMatch[0].replace(/[^0-9]/g,'')) : 4000;
+      card.querySelector('.result-total-row span:last-child').textContent = (total + shipping).toLocaleString() + '원';
+    }
+
+    /* ── 결과 헤더 HTML ── */
+    function resultHeader(label) {
+      return `<div class="step-label" style="margin-bottom:12px;"><span class="step-badge">2</span> ${label}</div>`;
+    }
+
+    /* ── 주문 데이터 파싱 ── */
+    function parseRows(rows, phoneClean) {
+      const alt = phoneAlt(phoneClean);
+      return Array.isArray(rows)
+        ? rows.filter(r => String(r[0]) === phoneClean || String(r[0]) === alt)
+        : [];
+    }
+
+    /* ── 주문 조회 (정정) ── */
+    async function lookupOrder() {
+      const phone = document.getElementById('phone-input').value.trim();
+      if (!/^\d{3}-\d{4}-\d{4}$/.test(phone)) return;
+      const phoneClean = phone.replace(/-/g,'');
+      const resultEl = document.getElementById('lookup-result');
+      resultEl.style.display = 'block';
+      resultEl.innerHTML = resultHeader('주문 내역 (최근 3일)') + '<div class="result-empty">조회 중...</div>';
+
+      try {
+        const rows = await fetch(`${GAS_URL}?phone=${phoneClean}`).then(r => r.json());
+        const filtered = parseRows(rows, phoneClean);
+
+        if (!filtered.length) {
+          resultEl.innerHTML = resultHeader('주문 내역 (최근 3일)') +
+            `<div class="result-empty">최근 3일 내 주문 내역이 없습니다.<span>* 내역이 안 보일 경우 조회를 다시 시도해 주세요.</span></div>`;
+          return;
+        }
+
+        let maxShipping = 4000, productTotal = 0;
+        const items = filtered.map((r, idx) => {
+          const s = Number(r[11]) || 4000;
+          if (s > maxShipping) maxShipping = s;
+          return { name:r[6], size:r[7], color:r[8], qty:r[9], price:r[10], date:r[1], idx };
+        });
+
+        const itemsHtml = items.map((item, i) => {
+          productTotal += item.price * item.qty;
+          return `
+            <div class="result-item-row" id="item-row-0-${i}">
+              <div style="flex:1">
+                <div class="result-item-name">${item.name}</div>
+                <div class="result-item-detail">사이즈: ${item.size} / 색상: ${item.color} / 수량: ${item.qty}개 (${item.date})</div>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <div class="item-price" style="font-weight:700; font-size:13px;">${(item.price*item.qty).toLocaleString()}원</div>
+                <button class="btn-row-edit"  onclick="startEdit(0,${i},'${item.date}')">수정</button>
+                <button class="btn-row-delete" onclick="deleteItem(0,${i},'${item.date}','${item.name}',${item.price},${item.qty})">삭제</button>
+              </div>
+            </div>
+            <div id="edit-row-0-${i}" class="edit-row">
+              <div class="edit-row-inner">
+                <div class="edit-field"><label>이름</label><input id="edit-name-0-${i}" value="${item.name}"></div>
+                <div class="edit-field"><label>사이즈</label><input id="edit-size-0-${i}" value="${item.size}"></div>
+                <div class="edit-field"><label>색상</label><input id="edit-color-0-${i}" value="${item.color}"></div>
+                <div class="edit-field"><label>수량</label><input id="edit-qty-0-${i}" value="${item.qty}" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div>
+                <div class="edit-field"><label>가격</label><input id="edit-price-0-${i}" value="${item.price}" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div>
+                <div class="edit-btns">
+                  <button class="edit-btn-cancel" onclick="cancelEdit(0,${i})">취소</button>
+                  <button class="edit-btn-save"   onclick="saveEdit(0,${i},'${item.date}','${item.name}')">저장</button>
+                </div>
+              </div>
+            </div>`;
+        }).join('');
+
+        resultEl.innerHTML = resultHeader('주문 내역 (최근 3일)') + `
+          <div class="result-order-card" data-order-idx="0">
+            <div class="result-order-header"><span style="font-size:13px; font-weight:700;">통합 주문 내역</span></div>
+            <div id="items-list-box">${itemsHtml}</div>
+            <div class="result-total-row">
+              <span>최종 금액 (배송비 ${maxShipping.toLocaleString()}원 1회 포함)</span>
+              <span>${(productTotal + maxShipping).toLocaleString()}원</span>
+            </div>
+          </div>`;
+      } catch {
+        resultEl.innerHTML = resultHeader('주문 내역 (최근 3일)') + '<div class="result-empty">조회 중 오류가 발생했습니다. 다시 시도해주세요.</div>';
+      }
+    }
+
+    /* ── 항목 삭제 ── */
+    async function deleteItem(orderIdx, itemIdx, date, name, price, qty) {
+      if (!confirm(`"${name}" 항목을 삭제할까요?`)) return;
+      const phone = document.getElementById('phone-input').value.replace(/-/g,'');
+      try {
+        await postGAS({ action:'delete', phone, date, oldName:name });
+        document.getElementById(`item-row-${orderIdx}-${itemIdx}`).remove();
+        document.getElementById(`edit-row-${orderIdx}-${itemIdx}`)?.remove();
+
+        const listBox = document.getElementById('items-list-box');
+        if (!listBox?.querySelectorAll('.result-item-row').length) {
+          document.getElementById('lookup-result').innerHTML = resultHeader('주문 내역 (최근 3일)') +
+            `<div class="result-empty">최근 3일 내 주문 내역이 없습니다.<span>(최근 주문했으나 내역이 보이지 않는 경우, '주문 조회' 버튼을 다시 한 번 눌러주세요.)</span></div>`;
+        } else {
+          const card = document.querySelector(`[data-order-idx="${orderIdx}"]`);
+          if (card) recalcCardTotal(card);
+        }
+        alert('삭제되었습니다.');
+      } catch { alert('삭제 중 오류가 발생했습니다.'); }
+    }
+
+    function startEdit(orderIdx, itemIdx) {
+      document.getElementById(`item-row-${orderIdx}-${itemIdx}`).style.display = 'none';
+      document.getElementById(`edit-row-${orderIdx}-${itemIdx}`).style.display = 'block';
+    }
+    function cancelEdit(orderIdx, itemIdx) {
+      document.getElementById(`item-row-${orderIdx}-${itemIdx}`).style.display = 'flex';
+      document.getElementById(`edit-row-${orderIdx}-${itemIdx}`).style.display = 'none';
+    }
+
+    async function saveEdit(orderIdx, itemIdx, date, oldName) {
+      const g = id => document.getElementById(id).value.trim();
+      const name  = g(`edit-name-0-${itemIdx}`);
+      const size  = g(`edit-size-0-${itemIdx}`);
+      const color = g(`edit-color-0-${itemIdx}`);
+      const qty   = g(`edit-qty-0-${itemIdx}`);
+      const price = g(`edit-price-0-${itemIdx}`);
+      if (!name||!size||!color||!qty||!price) { alert('모든 항목을 입력해주세요.'); return; }
+
+      const phone = document.getElementById('phone-input').value.replace(/-/g,'');
+      const saveBtn = document.querySelector(`#edit-row-${orderIdx}-${itemIdx} .edit-btn-save`);
+      saveBtn.textContent = '저장 중...'; saveBtn.style.opacity = '0.6';
+
+      try {
+        await postGAS({ action:'update', phone, date, oldName, name, size, color, qty:+qty, price:+price });
+        alert('수정되었습니다! 다시 조회해주세요.');
+        const row = document.getElementById(`item-row-${orderIdx}-${itemIdx}`);
+        row.querySelector('.result-item-name').textContent = name;
+        row.querySelector('.result-item-detail').textContent = `사이즈: ${size} / 색상: ${color} / 수량: ${qty}개 (${date})`;
+        row.querySelector('.item-price').textContent = (Number(price)*Number(qty)).toLocaleString() + '원';
+        cancelEdit(orderIdx, itemIdx);
+        const card = document.querySelector(`[data-order-idx="${orderIdx}"]`);
+        if (card) recalcCardTotal(card);
+      } catch {
+        alert('저장 중 오류가 발생했습니다.');
+        saveBtn.textContent = '저장'; saveBtn.style.opacity = '';
+      }
+    }
+
+    /* ── 환불 조회 ── */
+    async function lookupRefund() {
+      const phone = document.getElementById('refund-phone').value.trim();
+      if (!/^\d{3}-\d{4}-\d{4}$/.test(phone)) return;
+      const phoneClean = phone.replace(/-/g,'');
+      const resultEl = document.getElementById('refund-result');
+      resultEl.style.display = 'block';
+      resultEl.innerHTML = resultHeader('주문 내역 (최근 3일)') + '<div class="result-empty">조회 중...</div>';
+
+      try {
+        const rows = await fetch(`${GAS_URL}?phone=${phoneClean}`).then(r => r.json());
+        const filtered = parseRows(rows, phoneClean);
+
+        if (!filtered.length) {
+          resultEl.innerHTML = resultHeader('주문 내역') +
+            `<div class="result-empty">주문 내역이 없습니다.<div style="color:#666;font-size:13px;margin-top:12px;">최근 주문했으나 내역이 보이지 않는 경우,<br><span style="color:#2563eb;font-weight:700;">'주문 조회'</span> 버튼을 다시 한 번 눌러주세요.</div></div>`;
+          return;
+        }
+
+        let maxShipping = 4000, totalProduct = 0;
+        const itemsHtml = filtered.map(r => {
+          const s = Number(r[11]) || 4000;
+          if (s > maxShipping) maxShipping = s;
+          const item = { name:r[6], size:r[7], color:r[8], qty:r[9], price:r[10], date:r[1] };
+          totalProduct += item.price * item.qty;
+          return `
+            <div class="result-item-row">
+              <div>
+                <div class="result-item-name">${item.name}</div>
+                <div class="result-item-detail">사이즈: ${item.size} / 색상: ${item.color} / 수량: ${item.qty}개 (${item.date})</div>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px; flex-shrink:0;">
+                <div class="item-price" style="font-weight:700; font-size:14px; white-space:nowrap;">${(item.price*item.qty).toLocaleString()}원</div>
+                <button class="btn-row-apply" onclick="requestRefund('${item.name}','${item.size}','${item.color}',${item.qty},${item.price},'${item.date}','${phoneClean}',this)">신청</button>
+              </div>
+            </div>`;
+        }).join('');
+
+        resultEl.innerHTML = resultHeader('주문 내역') + `
+          <div class="result-order-card">
+            <div class="result-order-header"><span style="font-size:13px; font-weight:700;">통합 주문 내역</span></div>
+            ${itemsHtml}
+            <div class="result-total-row">
+              <span>최종 금액 (배송비 ${maxShipping.toLocaleString()}원 1회 포함)</span>
+              <span>${(totalProduct+maxShipping).toLocaleString()}원</span>
+            </div>
+          </div>`;
+      } catch {
+        resultEl.innerHTML = resultHeader('주문 내역') + '<div class="result-empty">조회 중 오류가 발생했습니다. 다시 시도해주세요.</div>';
+      }
+    }
+
+    async function requestRefund(name, size, color, qty, price, date, phone, btn) {
+      if (!confirm(`"${name}" 항목의 환불을 신청할까요?`)) return;
+      if (btn) { btn.disabled=true; btn.textContent='신청완료'; btn.style.opacity='0.45'; btn.style.cursor='default'; }
+      try {
+        await postGAS({ action:'refund', phone, date, name, product:name, size, color, qty, price });
+        alert(`환불 신청이 완료되었습니다!\n\n상품: ${name}\n사이즈: ${size} / 색상: ${color}\n수량: ${qty}개\n\n담당자가 확인 후 연락드립니다.`);
+      } catch {
+        alert('환불 신청 중 오류가 발생했습니다. 다시 시도해주세요.');
+        if (btn) { btn.disabled=false; btn.textContent='신청'; btn.style.opacity='1'; btn.style.cursor='pointer'; }
+      }
+    }
+
+    /* ── 주문 폼 ── */
+    function addItem() {
+      itemCount++;
+      const container = document.getElementById('items-container');
+      const isFirst = !container.children.length;
+      const card = document.createElement('div');
+      card.className = 'item-card';
+      card.id = 'item-' + itemCount;
+      card.innerHTML = `
+        <div class="item-card-title">
+          <span class="item-label">옷 정보</span>
+          ${!isFirst ? '<button class="delete-btn" onclick="removeItem(this)">삭제</button>' : ''}
+        </div>
+        <div class="field">
+          <label>옷 메뉴 이름 <span class="req">*</span></label>
+          <input type="text" placeholder="상품명">
+        </div>
+        <div class="field">
+          <label>가격 <span class="req">*</span></label>
+          <input type="text" class="price-input" placeholder="숫자만 입력" inputmode="numeric"
+            oninput="this.value=this.value.replace(/[^0-9]/g,''); calcTotal()">
+        </div>
+        <div class="field">
+          <label>사이즈 <span class="req">*</span></label>
+          <input type="text" placeholder="예: M, L, Free">
+        </div>
+        <div class="field">
+          <label>색상 <span class="req">*</span></label>
+          <input type="text" placeholder="예: 블랙, 화이트">
+        </div>
+        <div class="field">
+          <label>수량</label>
+          <div class="qty-wrap">
+            <button class="qty-btn" onclick="changeQty(this,-1)">−</button>
+            <div class="qty-display">1</div>
+            <button class="qty-btn" onclick="changeQty(this,1)">+</button>
+          </div>
+        </div>`;
+      container.appendChild(card);
+      reNumberItems();
+    }
+
+    function removeItem(btn) { btn.closest('.item-card').remove(); reNumberItems(); calcTotal(); }
+
+    function reNumberItems() {
+      document.querySelectorAll('#items-container .item-card').forEach((card, i) => {
+        card.querySelector('.item-label').textContent = '옷 정보 ' + (i + 1);
+      });
+    }
+
+    function changeQty(btn, delta) {
+      const display = btn.parentElement.querySelector('.qty-display');
+      display.textContent = Math.max(1, parseInt(display.textContent) + delta);
+      calcTotal();
+    }
+
+    function updateShipping() {
+      document.getElementById('shipping-display').textContent =
+        document.getElementById('island-check').checked ? '6,000원' : '4,000원';
+      calcTotal();
+    }
+
+    function calcTotal() {
+      let productTotal = 0;
+      document.querySelectorAll('#items-container .item-card').forEach(card => {
+        const price = parseInt(card.querySelectorAll('.field input')[1]?.value) || 0;
+        const qty   = parseInt(card.querySelector('.qty-display').textContent) || 1;
+        productTotal += price * qty;
+      });
+      const shipping = document.getElementById('island-check').checked ? 6000 : 4000;
+      const box = document.getElementById('summary-box');
+      if (productTotal > 0) {
+        box.classList.add('visible');
+        document.getElementById('sum-product').textContent = productTotal.toLocaleString() + '원';
+        document.getElementById('sum-shipping').textContent = shipping.toLocaleString() + '원';
+        document.getElementById('sum-total').textContent = (productTotal + shipping).toLocaleString() + '원';
+      } else {
+        box.classList.remove('visible');
+      }
+    }
+
+    function validateOrder() {
+      let ok = true;
+      document.querySelectorAll('#items-container .item-card').forEach(card => {
+        card.querySelectorAll('input').forEach(input => {
+          if (input.closest('.qty-wrap')) return;
+          const hasReq = input.closest('.field')?.querySelector('.req');
+          if (hasReq) {
+            input.classList.toggle('invalid', !input.value.trim());
+            if (!input.value.trim()) ok = false;
+          }
+        });
+      });
+      if (!ok) { alert('빨간 테두리로 표시된 필수 항목을 모두 입력해주세요.'); return; }
+      goTo('page-delivery');
+    }
+
+    async function saveOrder() {
+      const v = id => document.getElementById(id)?.value.trim() || '';
+      const phone = v('d-phone').replace(/-/g,'');
+      const items = [];
+      document.querySelectorAll('#items-container .item-card').forEach(card => {
+        const inputs = card.querySelectorAll('.field input');
+        items.push({
+          name:  inputs[0]?.value || '',
+          price: parseInt(inputs[1]?.value) || 0,
+          size:  inputs[2]?.value || '',
+          color: inputs[3]?.value || '',
+          qty:   parseInt(card.querySelector('.qty-display')?.textContent) || 1
+        });
+      });
+      const shipping = document.getElementById('island-check').checked ? 6000 : 4000;
+      const productTotal = items.reduce((s, i) => s + i.price * i.qty, 0);
+      try {
+        await postGAS({
+          phone, youtube:v('d-youtube'), depositor:v('d-name'),
+          zip:v('d-zip'), addr:v('d-addr'), addr2:v('d-addr2'), memo:v('d-memo'),
+          pmemo:v('p-memo'),
+          items, shipping, productTotal, total: productTotal + shipping,
+          date: new Date().toLocaleString('ko-KR', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' })
+        });
+      } catch(e) { console.error('저장 실패:', e); }
+    }
+
+    async function validateDelivery() {
+      if (isSubmitting) return;
+      const fieldIds = ['d-youtube','d-name','d-phone','d-zip','d-addr','d-addr2'];
+      let ok = true;
+      fieldIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const empty = !el.value.trim();
+        el.classList.toggle('invalid', empty);
+        if (empty) ok = false;
+      });
+      if (!ok) { alert('빨간 테두리로 표시된 필수 항목을 모두 입력해주세요.'); return; }
+
+      // 전화번호 11자리 검증
+      const phoneEl = document.getElementById('d-phone');
+      const phoneDigits = phoneEl.value.replace(/[^0-9]/g, '');
+      if (phoneDigits.length !== 11) {
+        phoneEl.classList.add('invalid');
+        alert('전화번호를 올바르게 입력해주세요.\n숫자 11자리로 입력해주세요. (예: 01012345678)');
+        return;
+      }
+
+      isSubmitting = true;
+      const submitBtn = document.querySelector('#page-delivery .btn-next');
+      submitBtn.textContent = '등록 중...'; submitBtn.style.opacity = '0.6';
+      await saveOrder();
+      isSubmitting = false;
+      submitBtn.textContent = '등록하기'; submitBtn.style.opacity = '';
+      alert('주문이 등록되었습니다!');
+      resetOrderForm();
+      goTo('page-home');
+    }
+
+    function resetOrderForm() {
+      document.getElementById('items-container').innerHTML = '';
+      itemCount = 0;
+      addItem();
+      document.getElementById('island-check').checked = false;
+      updateShipping(); calcTotal();
+      ['d-youtube','d-name','d-phone','d-zip','d-addr','d-addr2','d-memo','p-memo'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.value = ''; el.classList.remove('invalid'); }
+      });
+    }
+
+    function searchAddress() {
+      new daum.Postcode({
+        oncomplete(data) {
+          document.getElementById('d-zip').value = data.zonecode;
+          document.getElementById('d-addr').value = data.roadAddress || data.jibunAddress;
+          document.getElementById('d-addr2').focus();
+          ['d-zip','d-addr'].forEach(id => document.getElementById(id).classList.remove('invalid'));
+        }
+      }).open();
+    }
+
+    function copyAccount() {
+      const ACCOUNT = '3333-31-4284477';
+      const toast = document.getElementById('copy-toast');
+      const icon  = document.querySelector('.copy-icon');
+      const hint  = document.querySelector('.copy-hint');
+
+      const onCopied = () => {
+        icon.textContent = '✅'; hint.textContent = '복사됨!';
+        toast.classList.add('show');
+        setTimeout(() => {
+          toast.classList.remove('show');
+          icon.textContent = '📋'; hint.textContent = '탭하여 복사';
+        }, 2200);
+      };
+
+      navigator.clipboard?.writeText(ACCOUNT).then(onCopied) ?? (() => {
+        const el = Object.assign(document.createElement('textarea'), { value: ACCOUNT });
+        Object.assign(el.style, { position:'fixed', opacity:'0' });
+        document.body.append(el); el.select(); document.execCommand('copy');
+        el.remove(); onCopied();
+      })();
+    }
+
+    /* ── 배송 조회 ── */
+    async function trackDelivery() {
+      const phone = document.getElementById('tracking-phone').value.trim();
+      if (!/^\d{3}-\d{4}-\d{4}$/.test(phone)) return;
+      const phoneClean = phone.replace(/-/g, '');
+      const resultEl = document.getElementById('tracking-result');
+      resultEl.style.display = 'block';
+      resultEl.innerHTML = '<div class="tracking-card"><div style="text-align:center; padding:20px 0; color:var(--sub); font-size:14px;">🔍 조회 중입니다...</div></div>';
+
+      try {
+        const rows = await fetch(`${DELIVERY_URL}?phone=${phoneClean}`).then(r => r.json());
+        // 새 시트: 1열=휴대폰, 4열=운송장번호
+        const alt = phoneAlt(phoneClean);
+        const filtered = Array.isArray(rows)
+          ? rows.filter(r => String(r[1]) === phoneClean || String(r[1]) === alt)
+          : [];
+
+        if (!filtered.length) {
+          resultEl.innerHTML = `
+            <div class="tracking-card">
+              <div style="text-align:center; padding:20px 0;">
+                <div style="font-size:32px; margin-bottom:12px;">📭</div>
+                <div style="font-size:14px; font-weight:700; color:var(--text); margin-bottom:6px;">주문 내역이 없습니다.</div>
+                <div style="font-size:13px; color:var(--sub); line-height:1.6;">전화번호를 다시 확인해주세요.</div>
+              </div>
+            </div>`;
+          return;
+        }
+
+        // 운송장 번호: 5번째 열 = index 4
+        const invoiceNums = [...new Set(filtered.map(r => String(r[4] || '').trim()).filter(Boolean))];
+
+        if (!invoiceNums.length) {
+          resultEl.innerHTML = `
+            <div class="tracking-card">
+              <div style="text-align:center; padding:20px 0;">
+                <div style="font-size:32px; margin-bottom:12px;">📦</div>
+                <div style="font-size:15px; font-weight:800; color:var(--text); margin-bottom:8px;">배송 준비 중이에요</div>
+                <div style="font-size:13px; color:var(--sub); line-height:1.7;">아직 운송장 번호가 등록되지 않았습니다.<br>잠시 후 다시 확인해주세요.</div>
+              </div>
+            </div>`;
+          return;
+        }
+
+        const cardsHtml = invoiceNums.map(num => `
+          <div style="margin-bottom:12px;">
+            <div style="font-size:13px; color:var(--sub); margin-bottom:6px;">운송장 번호: <b style="color:var(--text);">${num}</b></div>
+            <a href="https://www.logen.co.kr/service_info/tracking?invoice_no=${num}" target="_blank"
+              style="display:flex; align-items:center; justify-content:center; gap:8px;
+                background:#0284c7; border-radius:12px; padding:14px 16px;
+                text-decoration:none; color:#fff; font-size:15px; font-weight:700;">
+              🚚 배송 현황 확인하기
+            </a>
+          </div>`).join('');
+
+        resultEl.innerHTML = `
+          <div class="tracking-card">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+              <span style="font-size:26px;">📦</span>
+              <div>
+                <div style="font-size:16px; font-weight:800; color:var(--text);">주문이 접수되었습니다!</div>
+                <div style="font-size:13px; color:var(--sub); margin-top:3px;">배송 현황을 확인하려면 아래 버튼을 눌러주세요.</div>
+              </div>
+            </div>
+            ${cardsHtml}
+          </div>`;
+      } catch {
+        resultEl.innerHTML = '<div class="tracking-card"><div style="text-align:center; padding:20px 0; color:var(--red); font-size:14px; font-weight:600;">조회 중 오류가 발생했습니다. 다시 시도해주세요.</div></div>';
+      }
+    }
+
+    addItem();
+  </script>
+</body>
+</html>
